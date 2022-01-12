@@ -1,3 +1,4 @@
+import { rgba } from 'polished';
 import styled, { css } from 'styled-components/native';
 
 type DayProps = {
@@ -12,7 +13,7 @@ export const Container = styled.View`
   padding-top: 5px;
 
   border-radius: 30px;
-  background-color: rgba(18, 6, 44, 0.7);
+  background-color: ${rgba('#12062c', 0.7)};
 
   flex-direction: row;
   flex-wrap: wrap;
@@ -31,7 +32,7 @@ export const Day = styled.View<DayProps>`
   align-items: center;
 
   background-color: ${({ isAvailable }) =>
-    isAvailable ? 'rgba(41, 150, 71, 0.75)' : 'rgba(222,78,78,1)'};
+    isAvailable ? rgba('#299647', 0.75) : '#DE4E4E'};
 
   ${({ isLastRow }) =>
     /* There is no gap in react native to use correctly */

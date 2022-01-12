@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Clock } from '../../components/Clock';
 import { Calendar } from '../../components/Calendar';
@@ -16,6 +16,10 @@ import {
   MonthCardList,
   Button,
   ButtonText,
+  Modal,
+  ModalCloseIcon,
+  ModalButton,
+  ModalText,
 } from './styles';
 
 interface MonthCardProps {
@@ -65,6 +69,8 @@ const monthCards: MonthCardProps[] = [
 ];
 
 export const Dashboard: React.FC = () => {
+  const [showModal, setShowModal] = useState(true);
+
   return (
     <Container>
       <Clock />
@@ -100,6 +106,22 @@ export const Dashboard: React.FC = () => {
       <Button activeOpacity={0.6} color="#299647">
         <ButtonText color="#d7d7d7">Marcar Ponto</ButtonText>
       </Button>
+
+      {showModal && (
+        <Modal>
+          <ModalCloseIcon>
+            <ModalText>X</ModalText>
+          </ModalCloseIcon>
+
+          <ModalButton>
+            <ModalText>Data Personalizada</ModalText>
+          </ModalButton>
+
+          <ModalButton>
+            <ModalText>Hora Atual</ModalText>
+          </ModalButton>
+        </Modal>
+      )}
     </Container>
   );
 };

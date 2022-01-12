@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components/native';
+import { rgba } from 'polished';
 
 type CircleProps = {
   top?: number;
@@ -14,7 +15,7 @@ export const Container = styled.View`
 
 export const Circle = styled.View<CircleProps>`
   position: absolute;
-  background-color: rgba(164, 43, 167, 0.8);
+  background-color: ${rgba('#a42ba7', 0.8)};
   width: 227px;
   height: 227px;
   border-radius: ${227 / 2}px;

@@ -1,5 +1,6 @@
-import { FlatList, ScrollView } from 'react-native';
 import styled from 'styled-components/native';
+import { FlatList, ScrollView } from 'react-native';
+import { rgba } from 'polished';
 
 interface ButtonProps {
   color: string;
@@ -21,7 +22,7 @@ export const Container = styled.ScrollView.attrs(() => ({
 export const Hour = styled.View`
   width: 250px;
   height: 40px;
-  background-color: rgba(86, 19, 143, 0.75);
+  background-color: ${rgba('#42138f', 0.75)};
 
   border-radius: 10px;
   justify-content: center;
@@ -87,3 +88,16 @@ export const ButtonText = styled.Text<ButtonTextProps>`
   font-size: 18px;
   color: ${({ color }) => color};
 `;
+
+export const Modal = styled.View`
+  position: absolute;
+  bottom: 100px;
+
+  background: ${rgba('#12062c', 0.9)};
+`;
+
+export const ModalButton = styled.TouchableOpacity``;
+
+export const ModalText = styled.Text``;
+
+export const ModalCloseIcon = styled.View``;
