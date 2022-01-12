@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useColorScheme, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 
-import { Dashboard } from './pages/Dashboard';
+import { Routes } from './routes';
 
 import { Container, Circle } from './styles';
 
@@ -18,7 +18,7 @@ const App = () => {
       <Container>
         <Circle right={-100} top={-80} />
         <Circle top={height} left={-100} />
-        <Dashboard />
+        <Routes />
       </Container>
     </NavigationContainer>
   );

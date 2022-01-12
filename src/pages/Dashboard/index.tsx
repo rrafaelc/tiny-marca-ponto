@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { Clock } from '../../components/Clock';
 import { Calendar } from '../../components/Calendar';
@@ -25,6 +26,9 @@ import {
   ModalText,
   ModalContainer,
 } from './styles';
+
+import { AppStackParamList } from '../../routes/app.routes';
+type Props = NativeStackScreenProps<AppStackParamList, 'Dashboard'>;
 
 interface MonthCardProps {
   id: string;
@@ -72,13 +76,16 @@ const monthCards: MonthCardProps[] = [
   },
 ];
 
-export const Dashboard: React.FC = () => {
+export const Dashboard: React.FC<Props> = ({ navigation }) => {
   const [showModal, setShowModal] = useState(false);
 
-  const handleToggleModal = useCallback(
-    () => setShowModal(!showModal),
-    [showModal],
-  );
+  const handleToggleModal = useCallback(() => {
+    setShowModal(!showModal);
+  }, [showModal]);
+
+  const handleNavigationCreateDate = useCallback(() => {
+    navigation.navigate('CreateDate');
+  }, [navigation]);
 
   return (
     <Container>
@@ -124,7 +131,9 @@ export const Dashboard: React.FC = () => {
                 <FeatherIcon name="x-circle" size={20} color="#d7d7d7" />
               </ModalCloseIcon>
 
-              <ModalButton activeOpacity={0.6}>
+              <ModalButton
+                activeOpacity={0.6}
+                onPress={handleNavigationCreateDate}>
                 <ModalText>Data Personalizada</ModalText>
               </ModalButton>
 
