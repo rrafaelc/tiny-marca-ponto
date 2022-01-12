@@ -30,18 +30,13 @@ export const Calendar = () => {
     return objectDays;
   }, []);
 
-  const randomIsActive = Math.floor(Math.random() * (28 - 1) + 1);
+  const isActive = useCallback((day: string) => {
+    if (Number(day) === 25) {
+      return true;
+    }
 
-  const isActive = useCallback(
-    (day: string) => {
-      if (Number(day) === randomIsActive) {
-        return true;
-      }
-
-      return false;
-    },
-    [randomIsActive],
-  );
+    return false;
+  }, []);
 
   return (
     <Container>

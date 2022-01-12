@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { TouchableWithoutFeedback } from 'react-native';
 
 import { Clock } from '../../components/Clock';
 import { Calendar } from '../../components/Calendar';
 import { MonthCard } from '../../components/MonthCard';
+
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import {
   Container,
@@ -20,6 +23,7 @@ import {
   ModalCloseIcon,
   ModalButton,
   ModalText,
+  ModalContainer,
 } from './styles';
 
 interface MonthCardProps {
@@ -69,7 +73,12 @@ const monthCards: MonthCardProps[] = [
 ];
 
 export const Dashboard: React.FC = () => {
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleToggleModal = useCallback(
+    () => setShowModal(!showModal),
+    [showModal],
+  );
 
   return (
     <Container>
@@ -103,24 +112,28 @@ export const Dashboard: React.FC = () => {
         <ButtonText color="#000">Configurações</ButtonText>
       </Button>
 
-      <Button activeOpacity={0.6} color="#299647">
+      <Button activeOpacity={0.6} color="#299647" onPress={handleToggleModal}>
         <ButtonText color="#d7d7d7">Marcar Ponto</ButtonText>
       </Button>
 
       {showModal && (
-        <Modal>
-          <ModalCloseIcon>
-            <ModalText>X</ModalText>
-          </ModalCloseIcon>
+        <TouchableWithoutFeedback onPress={handleToggleModal}>
+          <ModalContainer>
+            <Modal>
+              <ModalCloseIcon onPress={handleToggleModal}>
+                <FeatherIcon name="x-circle" size={20} color="#d7d7d7" />
+              </ModalCloseIcon>
 
-          <ModalButton>
-            <ModalText>Data Personalizada</ModalText>
-          </ModalButton>
+              <ModalButton activeOpacity={0.6}>
+                <ModalText>Data Personalizada</ModalText>
+              </ModalButton>
 
-          <ModalButton>
-            <ModalText>Hora Atual</ModalText>
-          </ModalButton>
-        </Modal>
+              <ModalButton activeOpacity={0.6}>
+                <ModalText>Hora Atual</ModalText>
+              </ModalButton>
+            </Modal>
+          </ModalContainer>
+        </TouchableWithoutFeedback>
       )}
     </Container>
   );

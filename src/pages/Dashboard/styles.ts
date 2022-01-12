@@ -89,15 +89,47 @@ export const ButtonText = styled.Text<ButtonTextProps>`
   color: ${({ color }) => color};
 `;
 
-export const Modal = styled.View`
+export const ModalContainer = styled.View`
   position: absolute;
-  bottom: 100px;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 
-  background: ${rgba('#12062c', 0.9)};
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 80px;
 `;
 
-export const ModalButton = styled.TouchableOpacity``;
+export const Modal = styled.View`
+  background: ${rgba('#12062c', 0.9)};
 
-export const ModalText = styled.Text``;
+  width: 219px;
+  padding: 15px 0;
+  height: 100px;
+  border-radius: 10px;
 
-export const ModalCloseIcon = styled.View``;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const ModalButton = styled.TouchableOpacity`
+  width: 150px;
+  margin-right: 10px;
+  background: #c4c4c4;
+  align-items: center;
+  padding: 5px 0;
+  border-radius: 7px;
+`;
+
+export const ModalText = styled.Text`
+  color: #000;
+  font-size: 14px;
+`;
+
+export const ModalCloseIcon = styled.TouchableOpacity`
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  padding: 4px;
+`;

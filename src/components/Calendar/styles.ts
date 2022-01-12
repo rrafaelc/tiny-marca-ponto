@@ -55,8 +55,10 @@ export const LastRowDay = styled.View`
 
 export const DayText = styled.Text`
   font-size: 12px;
+  color: #d7d7d7;
 `;
 
 export const HourText = styled.Text`
   font-size: 12px;
+  color: #d7d7d7;
 `;
