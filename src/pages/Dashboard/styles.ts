@@ -1,9 +1,20 @@
+import { FlatList, ScrollView } from 'react-native';
 import styled from 'styled-components/native';
 
-export const Container = styled.View`
-  padding: 20px 30px 10px 30px;
-  align-items: center;
-`;
+// export const Container = styled.View`
+//   padding: 20px 30px 10px 30px;
+//   align-items: center;
+// `;
+
+// https://github.com/styled-components/styled-components/issues/785
+export const Container = styled.ScrollView.attrs(() => ({
+  // https://stackoverflow.com/a/62692442
+  contentContainerStyle: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+  },
+}))`` as unknown as typeof ScrollView;
 
 export const Hour = styled.View`
   width: 250px;
@@ -51,4 +62,11 @@ export const PeriodText = styled.Text`
 export const CalendarNoteText = styled.Text`
   font-size: 12px;
   color: #d7d7d7;
+
+  margin-bottom: 20px;
 `;
+
+// https://stackoverflow.com/a/66056471
+export const MonthCardList = styled.FlatList`
+  /* margin-bottom: 20px; */
+` as unknown as typeof FlatList;

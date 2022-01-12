@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { Container, Day, LastRowDay, DayText, HourText } from './styles';
 
@@ -30,12 +30,28 @@ export const Calendar = () => {
     return objectDays;
   }, []);
 
+  const randomIsActive = Math.floor(Math.random() * (28 - 1) + 1);
+
+  const isActive = useCallback(
+    (day: string) => {
+      if (Number(day) === randomIsActive) {
+        return true;
+      }
+
+      return false;
+    },
+    [randomIsActive],
+  );
+
   return (
     <Container>
       {days.map(
         day =>
           !day.isLastDays && (
-            <Day key={day.text} available={day.available}>
+            <Day
+              key={day.text}
+              isAvailable={day.available}
+              isActive={isActive(day.text)}>
               <DayText>{day.text}</DayText>
               <HourText>{day.hour}</HourText>
             </Day>
@@ -46,7 +62,7 @@ export const Calendar = () => {
         {days.map(
           day =>
             day.isLastDays && (
-              <Day key={day.text} available={day.available} isLastRow>
+              <Day key={day.text} isAvailable={day.available} isLastRow>
                 <DayText>{day.text}</DayText>
                 <HourText>{day.hour}</HourText>
               </Day>

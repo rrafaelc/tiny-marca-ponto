@@ -1,8 +1,8 @@
 import styled, { css } from 'styled-components/native';
 
 type DayProps = {
-  available: boolean;
-  active?: boolean;
+  isAvailable: boolean;
+  isActive?: boolean;
   isLastRow?: boolean;
 };
 
@@ -30,8 +30,8 @@ export const Day = styled.View<DayProps>`
   justify-content: center;
   align-items: center;
 
-  background-color: ${({ available }) =>
-    available ? 'rgba(41, 150, 71, 0.75)' : 'rgba(222,78,78,1)'};
+  background-color: ${({ isAvailable }) =>
+    isAvailable ? 'rgba(41, 150, 71, 0.75)' : 'rgba(222,78,78,1)'};
 
   ${({ isLastRow }) =>
     /* There is no gap in react native to use correctly */
@@ -39,12 +39,17 @@ export const Day = styled.View<DayProps>`
     css`
       margin-right: 5px;
     `};
+
+  ${({ isActive }) =>
+    isActive &&
+    css`
+      background-color: transparent;
+      border: 1px solid #299647;
+    `};
 `;
 
 export const LastRowDay = styled.View`
-  /* margin-top: 5px; */
   flex-direction: row;
-  /* margin-right: 5px; */
 `;
 
 export const DayText = styled.Text`
