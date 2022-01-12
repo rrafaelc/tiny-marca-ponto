@@ -14,9 +14,9 @@ import {
   PeriodText,
   CalendarNoteText,
   MonthCardList,
+  Button,
+  ButtonText,
 } from './styles';
-import { format } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
 
 interface MonthCardProps {
   id: string;
@@ -44,13 +44,27 @@ const monthCards: MonthCardProps[] = [
     hour: 205,
     minute: 42,
   },
+  {
+    id: String(Math.random()),
+    month: 1,
+    hour: 205,
+    minute: 42,
+  },
+  {
+    id: String(Math.random()),
+    month: 12,
+    hour: 205,
+    minute: 42,
+  },
+  {
+    id: String(Math.random()),
+    month: 11,
+    hour: 205,
+    minute: 42,
+  },
 ];
 
 export const Dashboard: React.FC = () => {
-  // const date = new Date();
-  // const test = new Date(date.setMonth(4 - 1));
-  // console.log(format(test, 'MMMM', { locale: ptBR }));
-
   return (
     <Container>
       <Clock />
@@ -78,6 +92,14 @@ export const Dashboard: React.FC = () => {
         )}
         keyExtractor={card => card.id}
       />
+
+      <Button activeOpacity={0.6} color="#c4c4c4">
+        <ButtonText color="#000">Configurações</ButtonText>
+      </Button>
+
+      <Button activeOpacity={0.6} color="#299647">
+        <ButtonText color="#d7d7d7">Marcar Ponto</ButtonText>
+      </Button>
     </Container>
   );
 };
