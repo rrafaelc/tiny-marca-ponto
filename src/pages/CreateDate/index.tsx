@@ -54,6 +54,11 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
     [],
   );
 
+  const handleConfirmation = useCallback(() => {
+    // TODO
+    handleGoBack();
+  }, [handleGoBack]);
+
   const formatHour = useMemo(() => {
     return format(selectDate, 'HH:mm');
   }, [selectDate]);
@@ -84,7 +89,7 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
             <HourSelected>
               <HourSelectedText>{formatHour}</HourSelectedText>
             </HourSelected>
-            <CheckIcon>
+            <CheckIcon onPress={handleConfirmation}>
               <FeatherICon name="check" size={30} color="#d7d7d7" />
             </CheckIcon>
           </>
