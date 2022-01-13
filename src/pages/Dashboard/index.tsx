@@ -84,6 +84,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
   }, [showModal]);
 
   const handleNavigationCreateDate = useCallback(() => {
+    setShowModal(false);
     navigation.navigate('CreateDate');
   }, [navigation]);
 

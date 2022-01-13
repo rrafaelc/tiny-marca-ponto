@@ -8,7 +8,7 @@ type CircleProps = {
   left?: number;
 };
 
-export const Container = styled.View`
+export const Container = styled.SafeAreaView`
   flex: 1;
   background-color: #342457;
 `;
