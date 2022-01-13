@@ -1,12 +1,15 @@
 import React, { useCallback, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import Toast from 'react-native-toast-message';
 
 import { Clock } from '../../components/Clock';
 import { Calendar } from '../../components/Calendar';
 import { MonthCard } from '../../components/MonthCard';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
+
+import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 
 import {
   Container,
@@ -28,6 +31,7 @@ import {
 } from './styles';
 
 import { AppStackParamList } from '../../routes/app.routes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 type Props = NativeStackScreenProps<AppStackParamList, 'Dashboard'>;
 
 interface IMonthCardProps {
@@ -88,6 +92,33 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('CreateDate');
   }, [navigation]);
 
+  const handleCreateTimerClock = useCallback(async () => {
+    try {
+      const timerClockRepository = new TimerClockRepository();
+
+      const date = new Date();
+      const timeCreated = await timerClockRepository.create(date);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Ponto registrado com sucesso!',
+      });
+
+      setShowModal(false);
+
+      return timeCreated;
+    } catch (err) {
+      console.log(err);
+
+      Toast.show({
+        type: 'error',
+        text1: 'Aconteceu um erro ao registrar o ponto',
+      });
+
+      await AsyncStorage.clear();
+    }
+  }, []);
+
   return (
     <Container>
       <Clock />
@@ -138,7 +169,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
                 <ModalText>Data Personalizada</ModalText>
               </ModalButton>
 
-              <ModalButton activeOpacity={0.6}>
+              <ModalButton activeOpacity={0.6} onPress={handleCreateTimerClock}>
                 <ModalText>Hora Atual</ModalText>
               </ModalButton>
             </Modal>

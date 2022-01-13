@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 
 import { Routes } from './routes';
 
@@ -18,6 +19,7 @@ const App = () => {
         <Circle top={height} left={-100} />
         <Routes />
       </Container>
+      <Toast visibilityTime={3000} position="bottom" />
     </NavigationContainer>
   );
 };
