@@ -30,14 +30,14 @@ import {
 import { AppStackParamList } from '../../routes/app.routes';
 type Props = NativeStackScreenProps<AppStackParamList, 'Dashboard'>;
 
-interface MonthCardProps {
+interface IMonthCardProps {
   id: string;
   month: number;
   hour: number;
   minute: number;
 }
 
-const monthCards: MonthCardProps[] = [
+const monthCards: IMonthCardProps[] = [
   {
     id: String(Math.random()),
     month: 4,

@@ -2,11 +2,11 @@ import styled from 'styled-components/native';
 import { FlatList, ScrollView } from 'react-native';
 import { rgba } from 'polished';
 
-interface ButtonProps {
+interface IButtonProps {
   color: string;
 }
 
-type ButtonTextProps = ButtonProps;
+type IButtonTextProps = IButtonProps;
 
 // https://github.com/styled-components/styled-components/issues/785
 export const Container = styled.ScrollView.attrs(() => ({
@@ -74,7 +74,7 @@ export const MonthCardList = styled.FlatList`
   margin-bottom: 25px;
 ` as unknown as typeof FlatList;
 
-export const Button = styled.TouchableOpacity<ButtonProps>`
+export const Button = styled.TouchableOpacity<IButtonProps>`
   width: 100%;
   padding: 10px 0;
   margin-bottom: 20px;
@@ -84,7 +84,7 @@ export const Button = styled.TouchableOpacity<ButtonProps>`
   align-items: center;
 `;
 
-export const ButtonText = styled.Text<ButtonTextProps>`
+export const ButtonText = styled.Text<IButtonTextProps>`
   font-size: 18px;
   color: ${({ color }) => color};
 `;
