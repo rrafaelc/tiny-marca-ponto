@@ -9,6 +9,7 @@ interface IStorage {
   month: number;
   year: number;
   period: Array<{
+    id: string;
     date: string;
   }>;
 }
@@ -31,14 +32,17 @@ export class TimerClockRepository implements ITimerClockRepository {
       if (findIndex !== -1) {
         const register = jsonStorage[findIndex];
 
-        const parseStringPeriodToDate: Array<{ date: Date }> = [];
+        const parseStringPeriodToDate: Array<{ id: string; date: Date }> = [];
         register.period.forEach(period => {
-          parseStringPeriodToDate.push({ date: new Date(period.date) });
+          parseStringPeriodToDate.push({
+            id: period.id,
+            date: new Date(period.date),
+          });
         });
 
         const newRegister = {
           ...register,
-          period: [...parseStringPeriodToDate, { date }],
+          period: [...parseStringPeriodToDate, { id: uuid(), date }],
         };
 
         try {
@@ -63,6 +67,7 @@ export class TimerClockRepository implements ITimerClockRepository {
       year: date.getFullYear(),
       period: [
         {
+          id: uuid(),
           date,
         },
       ],

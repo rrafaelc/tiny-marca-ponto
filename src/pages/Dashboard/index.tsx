@@ -166,7 +166,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
               <ModalButton
                 activeOpacity={0.6}
                 onPress={handleNavigationCreateDate}>
-                <ModalText>Data Personalizada</ModalText>
+                <ModalText>Hora Personalizada</ModalText>
               </ModalButton>
 
               <ModalButton activeOpacity={0.6} onPress={handleCreateTimerClock}>

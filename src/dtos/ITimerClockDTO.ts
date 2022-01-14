@@ -4,6 +4,7 @@ export interface ITimerClockDTO {
   month: number;
   year: number;
   period: Array<{
+    id: string;
     date: Date;
   }>;
 }

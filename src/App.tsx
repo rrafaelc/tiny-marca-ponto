@@ -19,7 +19,7 @@ const App = () => {
         <Circle top={height} left={-100} />
         <Routes />
       </Container>
-      <Toast visibilityTime={3000} position="bottom" />
+      <Toast visibilityTime={3000} />
     </NavigationContainer>
   );
 };
