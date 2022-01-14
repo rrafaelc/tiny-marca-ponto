@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../routes/app.routes';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
+import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 
 import { Clock } from '../../components/Clock';
 
@@ -27,6 +28,7 @@ import {
 type Props = NativeStackScreenProps<AppStackParamList, 'CreateDate'>;
 
 export const CreateDate: React.FC<Props> = ({ navigation }) => {
+  const [lastDate, setLastDate] = useState<Date | null>(null);
   const [selectDate, setSelectDate] = useState(new Date());
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -59,9 +61,35 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
     handleGoBack();
   }, [handleGoBack]);
 
-  const formatHour = useMemo(() => {
-    return format(selectDate, 'HH:mm');
-  }, [selectDate]);
+  const formatDate = useCallback((date: Date | null) => {
+    if (date) {
+      return format(date, 'HH:mm');
+    }
+
+    return '--:--';
+  }, []);
+
+  const formatHour = useCallback((date: Date | null) => {
+    if (date) {
+      return format(date, 'dd/MM/yyyy');
+    }
+
+    return '--/--/--';
+  }, []);
+
+  useEffect(() => {
+    const getLastDate = async () => {
+      const timerClockRepository = new TimerClockRepository();
+
+      const d = await timerClockRepository.findLastDate();
+
+      if (d) {
+        setLastDate(d.date);
+      }
+    };
+
+    getLastDate();
+  }, []);
 
   return (
     <Container>
@@ -74,8 +102,8 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
         <LastDate>
           <LastDateTitle>Último horário registrado</LastDateTitle>
           <DateText>
-            14/02/2022
-            <HourText> 06:56:23</HourText>
+            {formatHour(lastDate)}
+            <HourText> {formatDate(lastDate)}</HourText>
           </DateText>
         </LastDate>
 
@@ -87,7 +115,7 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
         {showConfirmation && (
           <>
             <HourSelected>
-              <HourSelectedText>{formatHour}</HourSelectedText>
+              <HourSelectedText>{formatHour(selectDate)}</HourSelectedText>
             </HourSelected>
             <CheckIcon onPress={handleConfirmation}>
               <FeatherICon name="check" size={30} color="#d7d7d7" />

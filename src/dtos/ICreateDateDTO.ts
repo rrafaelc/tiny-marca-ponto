@@ -1,4 +1,4 @@
-export interface ITimerClockDTO {
+export interface ICreateDateDTO {
   id: string;
   day: number;
   month: number;

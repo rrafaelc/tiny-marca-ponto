@@ -1,7 +1,9 @@
 import { v4 as uuid } from 'uuid';
 import { ITimerClockRepository } from './ITimerClockRepository';
-import { ITimerClockDTO } from '../dtos/ITimerClockDTO';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { ICreateDateDTO } from '../dtos/ICreateDateDTO';
+import { IFindLastDateDTO } from '../dtos/IFindLastDateDTO';
 
 interface IStorage {
   id: string;
@@ -15,7 +17,7 @@ interface IStorage {
 }
 
 export class TimerClockRepository implements ITimerClockRepository {
-  public async create(date: Date): Promise<ITimerClockDTO> {
+  public async create(date: Date): Promise<ICreateDateDTO> {
     const storage = await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto');
 
     if (storage) {
@@ -60,7 +62,7 @@ export class TimerClockRepository implements ITimerClockRepository {
       }
     }
 
-    const registerTimer: ITimerClockDTO = {
+    const registerTimer: ICreateDateDTO = {
       id: uuid(),
       day: date.getDate(),
       month: date.getMonth() + 1,
@@ -88,5 +90,29 @@ export class TimerClockRepository implements ITimerClockRepository {
     }
 
     return registerTimer;
+  }
+
+  public async findLastDate(): Promise<IFindLastDateDTO | null> {
+    const storage = await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto');
+
+    if (storage) {
+      const parseStorage: IStorage[] = JSON.parse(storage);
+
+      const allDates: number[] = [];
+
+      parseStorage.forEach(st =>
+        st.period.forEach(period =>
+          allDates.push(new Date(period.date).getTime()),
+        ),
+      );
+
+      const lastDate = {
+        date: new Date(Math.max(...allDates)),
+      };
+
+      return lastDate;
+    }
+
+    return null;
   }
 }
