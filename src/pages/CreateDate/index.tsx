@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../routes/app.routes';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { format } from 'date-fns';
 import { TimerClockRepository } from '../../repositories/TimerClockRepository';
+import { format } from 'date-fns';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Toast from 'react-native-toast-message';
 
 import { Clock } from '../../components/Clock';
 
@@ -78,17 +79,25 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    const getLastDate = async () => {
-      const timerClockRepository = new TimerClockRepository();
+    const timerClockRepository = new TimerClockRepository();
 
-      const d = await timerClockRepository.findLastDate();
+    timerClockRepository
+      .findLastDate()
+      .then(response => {
+        if (response !== null) {
+          setLastDate(response.date);
+        }
+      })
+      .catch(err => {
+        console.log(err);
 
-      if (d) {
-        setLastDate(d.date);
-      }
-    };
-
-    getLastDate();
+        Toast.show({
+          type: 'error',
+          text1: 'Aconteceu um erro',
+          text2: 'Aconteceu um erro ao carregar o último horário registrado',
+          visibilityTime: 6000,
+        });
+      });
   }, []);
 
   return (
