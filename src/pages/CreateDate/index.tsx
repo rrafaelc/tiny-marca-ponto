@@ -2,10 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../routes/app.routes';
-import { TimerClockRepository } from '../../repositories/TimerClockRepository';
-import { format } from 'date-fns';
+import { format, compareAsc } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Toast from 'react-native-toast-message';
+
+import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 
 import { Clock } from '../../components/Clock';
 
@@ -57,14 +58,59 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
     [],
   );
 
-  const handleConfirmation = useCallback(() => {
-    // TODO
+  const handleConfirmation = useCallback(async () => {
+    if (lastDate) {
+      const compareCurrentDate = compareAsc(selectDate, new Date());
+      const compareDate = compareAsc(selectDate, lastDate);
+
+      if (compareCurrentDate === 1) {
+        Toast.show({
+          type: 'info',
+          text1: 'Não permitido registrar horários futuros',
+        });
+
+        return;
+      }
+
+      if (compareDate === -1) {
+        Toast.show({
+          type: 'info',
+          text1: 'Não permitido registrar horários anteriores',
+        });
+
+        return;
+      }
+
+      const compareHours =
+        lastDate.toDateString() === selectDate.toDateString() &&
+        selectDate.getHours() === lastDate.getHours() &&
+        selectDate.getMinutes() === lastDate.getMinutes();
+
+      if (compareHours) {
+        Toast.show({
+          type: 'info',
+          text1: 'Não permitido registrar horários iguais',
+        });
+
+        return;
+      }
+    }
+
+    const timerClockRepository = new TimerClockRepository();
+
+    await timerClockRepository.create(selectDate);
+
+    Toast.show({
+      type: 'success',
+      text1: 'Ponto registrado com sucesso!',
+    });
+
     handleGoBack();
-  }, [handleGoBack]);
+  }, [lastDate, selectDate, handleGoBack]);
 
   const formatDate = useCallback((date: Date | null) => {
     if (date) {
-      return format(date, 'HH:mm');
+      return format(date, 'dd/MM/yyyy');
     }
 
     return '--:--';
@@ -72,7 +118,7 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
 
   const formatHour = useCallback((date: Date | null) => {
     if (date) {
-      return format(date, 'dd/MM/yyyy');
+      return format(date, 'HH:mm');
     }
 
     return '--/--/--';
@@ -111,8 +157,8 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
         <LastDate>
           <LastDateTitle>Último horário registrado</LastDateTitle>
           <DateText>
-            {formatHour(lastDate)}
-            <HourText> {formatDate(lastDate)}</HourText>
+            {formatDate(lastDate)}
+            <HourText> {formatHour(lastDate)}</HourText>
           </DateText>
         </LastDate>
 
@@ -123,7 +169,7 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
 
         {showConfirmation && (
           <>
-            <HourSelected>
+            <HourSelected onPress={handleToggleDatePicker}>
               <HourSelectedText>{formatHour(selectDate)}</HourSelectedText>
             </HourSelected>
             <CheckIcon onPress={handleConfirmation}>

@@ -26,12 +26,12 @@ export const LastDate = styled.View`
 `;
 
 export const LastDateTitle = styled.Text`
-  font-size: 14px;
+  font-size: 20px;
   color: #d7d7d7;
 `;
 
 export const DateText = styled.Text`
-  font-size: 14px;
+  font-size: 20px;
   color: #d7d7d7;
 `;
 
@@ -56,7 +56,7 @@ export const SelectDateText = styled.Text`
   margin-left: 8px;
 `;
 
-export const HourSelected = styled.View`
+export const HourSelected = styled.TouchableOpacity`
   padding: 10px;
   border-radius: 10px;
   background: #299647;
