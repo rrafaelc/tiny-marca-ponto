@@ -3,6 +3,8 @@ import { TouchableWithoutFeedback } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
 
+import { compareDate } from '../../utils/compareDate';
+
 import { Clock } from '../../components/Clock';
 import { Calendar } from '../../components/Calendar';
 import { MonthCard } from '../../components/MonthCard';
@@ -31,7 +33,7 @@ import {
 } from './styles';
 
 import { AppStackParamList } from '../../routes/app.routes';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 type Props = NativeStackScreenProps<AppStackParamList, 'Dashboard'>;
 
 interface IMonthCardProps {
@@ -95,8 +97,26 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
   const handleCreateTimerClock = useCallback(async () => {
     try {
       const timerClockRepository = new TimerClockRepository();
-
       const date = new Date();
+
+      const lastDate = await timerClockRepository.findLastDate();
+
+      if (lastDate) {
+        const compare = compareDate({
+          chosenDate: date,
+          lastDate: lastDate.date,
+        });
+
+        if (compare === 'equal') {
+          Toast.show({
+            type: 'info',
+            text1: 'Não permitido registrar horários iguais',
+          });
+
+          return;
+        }
+      }
+
       const timeCreated = await timerClockRepository.create(date);
 
       Toast.show({
@@ -114,8 +134,6 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
         type: 'error',
         text1: 'Aconteceu um erro ao registrar o ponto',
       });
-
-      await AsyncStorage.clear();
     }
   }, []);
 

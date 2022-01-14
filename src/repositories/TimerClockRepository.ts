@@ -23,7 +23,7 @@ export class TimerClockRepository implements ITimerClockRepository {
     if (storage) {
       const jsonStorage: IStorage[] = JSON.parse(storage);
 
-      // Find if already has a day
+      // Find if already has a saved day
       const findIndex = jsonStorage.findIndex(
         register =>
           register.day === date.getDate() &&

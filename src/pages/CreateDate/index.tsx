@@ -2,12 +2,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../routes/app.routes';
-import { format, compareAsc } from 'date-fns';
+import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Toast from 'react-native-toast-message';
 
-import { TimerClockRepository } from '../../repositories/TimerClockRepository';
+import { compareDate } from '../../utils/compareDate';
 
+import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 import { Clock } from '../../components/Clock';
 
 import FeatherICon from 'react-native-vector-icons/Feather';
@@ -60,10 +61,12 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
 
   const handleConfirmation = useCallback(async () => {
     if (lastDate) {
-      const compareCurrentDate = compareAsc(selectDate, new Date());
-      const compareDate = compareAsc(selectDate, lastDate);
+      const compare = compareDate({
+        chosenDate: selectDate,
+        lastDate,
+      });
 
-      if (compareCurrentDate === 1) {
+      if (compare === 'future') {
         Toast.show({
           type: 'info',
           text1: 'Não permitido registrar horários futuros',
@@ -72,7 +75,7 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
         return;
       }
 
-      if (compareDate === -1) {
+      if (compare === 'previous') {
         Toast.show({
           type: 'info',
           text1: 'Não permitido registrar horários anteriores',
@@ -81,12 +84,7 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
         return;
       }
 
-      const compareHours =
-        lastDate.toDateString() === selectDate.toDateString() &&
-        selectDate.getHours() === lastDate.getHours() &&
-        selectDate.getMinutes() === lastDate.getMinutes();
-
-      if (compareHours) {
+      if (compare === 'equal') {
         Toast.show({
           type: 'info',
           text1: 'Não permitido registrar horários iguais',
