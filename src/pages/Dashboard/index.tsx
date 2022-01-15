@@ -189,12 +189,12 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
       <Month>
         <MonthText>Maio</MonthText>
         <Period>
-          <PeriodText>Manhã - 4:45</PeriodText>
-          <PeriodText>Tarde - 4:45</PeriodText>
+          <PeriodText>Total hoje</PeriodText>
+          <PeriodText>08:25</PeriodText>
         </Period>
       </Month>
 
-      <Calendar />
+      <Calendar month={0} year={2022} />
       <CalendarNoteText>Nota: Clique em um dia para editar</CalendarNoteText>
 
       <MonthCardList

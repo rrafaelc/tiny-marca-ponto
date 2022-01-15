@@ -2,43 +2,32 @@ import { v4 as uuid } from 'uuid';
 import { ITimerClockRepository } from './ITimerClockRepository';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { ICreateDateDTO } from '../dtos/ICreateDateDTO';
+import { IDatePropsDTO } from '../dtos/IDatePropsDTO';
 import { IFindLastDateDTO } from '../dtos/IFindLastDateDTO';
 
-interface IStorage {
-  id: string;
-  day: number;
-  month: number;
-  year: number;
-  period: Array<{
-    id: string;
-    date: string;
-  }>;
-}
-
 export class TimerClockRepository implements ITimerClockRepository {
-  public async create(date: Date): Promise<ICreateDateDTO> {
+  public async create(date: Date): Promise<IDatePropsDTO> {
     const storage =
       (await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto')) || '[]';
 
-    const jsonStorage: ICreateDateDTO[] = JSON.parse(storage);
+    const jsonStorage: IDatePropsDTO[] = JSON.parse(storage);
 
     // Find if already has a saved day
     const findIndex = jsonStorage.findIndex(
       register =>
         register.day === date.getDate() &&
-        register.month === date.getMonth() + 1 &&
+        register.month === date.getMonth() &&
         register.year === date.getFullYear(),
     );
 
     if (findIndex !== -1) {
       const register = jsonStorage[findIndex];
 
-      const parseStringPeriodToDate: Array<{ id: string; date: Date }> = [];
+      const parseStringPeriodToDate: Array<{ id: string; date: string }> = [];
       register.period.forEach(period => {
         parseStringPeriodToDate.push({
           id: period.id,
-          date: new Date(period.date),
+          date: period.date,
         });
       });
 
@@ -48,7 +37,7 @@ export class TimerClockRepository implements ITimerClockRepository {
           ...parseStringPeriodToDate,
           {
             id: uuid(),
-            date,
+            date: String(date),
           },
         ],
       };
@@ -71,15 +60,15 @@ export class TimerClockRepository implements ITimerClockRepository {
       return newRegister;
     }
 
-    const registerTimer: ICreateDateDTO = {
+    const registerTimer: IDatePropsDTO = {
       id: uuid(),
       day: date.getDate(),
-      month: date.getMonth() + 1,
+      month: date.getMonth(),
       year: date.getFullYear(),
       period: [
         {
           id: uuid(),
-          date,
+          date: String(date),
         },
       ],
     };
@@ -108,7 +97,7 @@ export class TimerClockRepository implements ITimerClockRepository {
     const storage = await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto');
 
     if (storage) {
-      const parseStorage: IStorage[] = JSON.parse(storage);
+      const parseStorage: IDatePropsDTO[] = JSON.parse(storage);
 
       const allDates: number[] = [];
 
@@ -128,21 +117,31 @@ export class TimerClockRepository implements ITimerClockRepository {
     return null;
   }
 
-  public async getMonthDays(month: number): Promise<void> {
-    const storage = await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto');
+  public async getMonthDays(month: number): Promise<IDatePropsDTO[]> {
+    const storage =
+      (await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto')) || '[]';
 
-    if (storage) {
-      const parseStorage: IStorage[] = JSON.parse(storage);
+    const parseStorage: IDatePropsDTO[] = JSON.parse(storage);
 
-      const days = parseStorage.filter(date => date.month === month);
+    const days = parseStorage.filter(date => {
+      // console.log(date.month + ' - ' + month);
 
-      console.log('==START==');
-      days.forEach(day =>
-        day.period.forEach(period =>
-          console.log(new Date(period.date).toLocaleString()),
-        ),
-      );
-      console.log('==END==');
-    }
+      return date.month === month;
+    });
+
+    console.log('==START==');
+    // days.forEach(day =>
+    //   day.period.forEach(period =>
+    //     console.log(new Date(period.date).toLocaleString()),
+    //   ),
+    // );
+
+    // days.forEach(day => console.log(day));
+
+    console.log(JSON.stringify(days));
+
+    console.log('==END==');
+
+    return days;
   }
 }
