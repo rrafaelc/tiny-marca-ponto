@@ -3,16 +3,11 @@ import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 import { getDaysInMonth } from 'date-fns';
 
 import { Container, Day, LastRowDay, DayText, HourText } from './styles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Para salvar usa o asyncStorage
-// https://react-native-async-storage.github.io/async-storage/
 
 type Day = {
   text: string;
   available: boolean;
   hour: string;
-  isLastDays: boolean;
 };
 
 export const Calendar = () => {
@@ -26,7 +21,6 @@ export const Calendar = () => {
         text: String(i).padStart(2, '0'),
         available: random > 0.5 ? true : false,
         hour: random > 0.5 ? '4:45' : '--:--',
-        isLastDays: i > 28 ? true : false,
       });
     }
 
@@ -42,8 +36,6 @@ export const Calendar = () => {
   }, []);
 
   useEffect(() => {
-    // Depois o dias do mes com um parametro recebido em mes
-
     const f = async () => {
       console.log(getDaysInMonth(new Date()) + ' Dias');
 
@@ -58,8 +50,8 @@ export const Calendar = () => {
   return (
     <Container>
       {days.map(
-        day =>
-          !day.isLastDays && (
+        (day, index) =>
+          index < 28 && (
             <Day
               key={day.text}
               isAvailable={day.available}
@@ -72,8 +64,8 @@ export const Calendar = () => {
 
       <LastRowDay>
         {days.map(
-          day =>
-            day.isLastDays && (
+          (day, index) =>
+            index >= 28 && (
               <Day key={day.text} isAvailable={day.available} isLastRow>
                 <DayText>{day.text}</DayText>
                 <HourText>{day.hour}</HourText>
