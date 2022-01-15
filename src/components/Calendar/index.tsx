@@ -1,6 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { TimerClockRepository } from '../../repositories/TimerClockRepository';
+import { getDaysInMonth } from 'date-fns';
 
 import { Container, Day, LastRowDay, DayText, HourText } from './styles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Para salvar usa o asyncStorage
 // https://react-native-async-storage.github.io/async-storage/
@@ -36,6 +39,20 @@ export const Calendar = () => {
     }
 
     return false;
+  }, []);
+
+  useEffect(() => {
+    // Depois o dias do mes com um parametro recebido em mes
+
+    const f = async () => {
+      console.log(getDaysInMonth(new Date()) + ' Dias');
+
+      const timerClockRepository = new TimerClockRepository();
+
+      timerClockRepository.getMonthDays(1);
+    };
+
+    f();
   }, []);
 
   return (

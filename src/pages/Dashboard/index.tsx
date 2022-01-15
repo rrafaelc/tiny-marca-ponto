@@ -14,6 +14,8 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 
 import {
+  DevButtonCreate,
+  DevButtonClear,
   Container,
   Hour,
   HourText,
@@ -33,6 +35,7 @@ import {
 } from './styles';
 
 import { AppStackParamList } from '../../routes/app.routes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'Dashboard'>;
 
@@ -137,8 +140,47 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     }
   }, []);
 
+  const handleDevCreate = useCallback(async () => {
+    const timerClockRepository = new TimerClockRepository();
+    const date = new Date();
+
+    const _3DaysBefore = new Date(date.getTime() - 3 * 24 * 60 * 60 * 1000);
+    const _2DaysBefore = new Date(date.getTime() - 2 * 24 * 60 * 60 * 1000);
+    const _1DayBefore = new Date(date.getTime() - 1 * 24 * 60 * 60 * 1000);
+
+    await timerClockRepository.create(new Date(_3DaysBefore.setHours(6, 58)));
+    await timerClockRepository.create(new Date(_3DaysBefore.setHours(12, 2)));
+    await timerClockRepository.create(new Date(_3DaysBefore.setHours(12, 56)));
+    await timerClockRepository.create(new Date(_3DaysBefore.setHours(17, 8)));
+
+    await timerClockRepository.create(new Date(_2DaysBefore.setHours(6, 58)));
+    await timerClockRepository.create(new Date(_2DaysBefore.setHours(12, 2)));
+    await timerClockRepository.create(new Date(_2DaysBefore.setHours(12, 56)));
+    await timerClockRepository.create(new Date(_2DaysBefore.setHours(17, 8)));
+
+    await timerClockRepository.create(new Date(_1DayBefore.setHours(6, 58)));
+    await timerClockRepository.create(new Date(_1DayBefore.setHours(12, 2)));
+    await timerClockRepository.create(new Date(_1DayBefore.setHours(12, 56)));
+    await timerClockRepository.create(new Date(_1DayBefore.setHours(17, 8)));
+
+    Toast.show({
+      type: 'success',
+      text1: 'Ponto registrado com sucesso!',
+    });
+  }, []);
+
+  const handleDevClear = useCallback(async () => {
+    AsyncStorage.clear();
+  }, []);
+
   return (
     <Container>
+      <DevButtonCreate onPress={handleDevCreate}>
+        <FeatherIcon name="tool" size={20} color="#fff" />
+      </DevButtonCreate>
+      <DevButtonClear onPress={handleDevClear}>
+        <FeatherIcon name="trash-2" size={20} color="#fff" />
+      </DevButtonClear>
       <Clock />
       <Hour>
         <HourText>207 horas e 10 minutos</HourText>

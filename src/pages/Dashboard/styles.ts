@@ -8,6 +8,26 @@ interface IButtonProps {
 
 type IButtonTextProps = IButtonProps;
 
+export const DevButtonCreate = styled.TouchableOpacity`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+
+  background-color: #299647;
+  padding: 10px;
+  border-radius: 50px;
+`;
+
+export const DevButtonClear = styled.TouchableOpacity`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+
+  background-color: #ff0000;
+  padding: 10px;
+  border-radius: 50px;
+`;
+
 // https://github.com/styled-components/styled-components/issues/785
 export const Container = styled.ScrollView.attrs(() => ({
   // https://stackoverflow.com/a/62692442
