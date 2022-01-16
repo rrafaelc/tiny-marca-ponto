@@ -14,7 +14,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 
 import { AppStackParamList } from '../../routes/app.routes';
-import { useCalendar } from '../../components/context/calendarContext';
+import { useCalendar } from '../../context/calendarContext';
 
 import {
   DevButtonCreate,
@@ -90,7 +90,7 @@ const monthCards: IMonthCardProps[] = [
 export const Dashboard: React.FC<Props> = ({ navigation }) => {
   const [showModal, setShowModal] = useState(false);
 
-  const { reloadCalendar } = useCalendar();
+  const { reloadCalendar, setCalendarLoading } = useCalendar();
 
   const handleToggleModal = useCallback(() => {
     setShowModal(!showModal);
@@ -148,27 +148,44 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     const timerClockRepository = new TimerClockRepository();
     const date = new Date();
 
-    for (let i = 1; i < 6; i++) {
-      const oldDays = new Date(date.getTime() - i * 24 * 60 * 60 * 1000);
+    setCalendarLoading(true);
 
-      await timerClockRepository.create(new Date(oldDays.setHours(6, 58)));
-      await timerClockRepository.create(new Date(oldDays.setHours(12, 2)));
-      await timerClockRepository.create(new Date(oldDays.setHours(12, 56)));
-      await timerClockRepository.create(new Date(oldDays.setHours(17, 8)));
+    for (let i = 1; i < 8; i++) {
+      const oldDays = new Date(date.getTime() - i * 24 * 60 * 60 * 1000);
+      const random = () => Math.random() * (60 - 0) + 0;
+
+      await timerClockRepository.create(
+        new Date(oldDays.setHours(6, random())),
+      );
+      await timerClockRepository.create(
+        new Date(oldDays.setHours(12, random())),
+      );
+      await timerClockRepository.create(
+        new Date(oldDays.setHours(12, random())),
+      );
+      await timerClockRepository.create(
+        new Date(oldDays.setHours(17, random())),
+      );
     }
 
     Toast.show({
       type: 'success',
       text1: 'Ponto registrado com sucesso!',
     });
+    setCalendarLoading(false);
 
     reloadCalendar();
-  }, [reloadCalendar]);
+  }, [reloadCalendar, setCalendarLoading]);
 
   const handleDevClear = useCallback(async () => {
+    setCalendarLoading(true);
+
     AsyncStorage.clear();
+
+    setCalendarLoading(false);
+
     reloadCalendar();
-  }, [reloadCalendar]);
+  }, [reloadCalendar, setCalendarLoading]);
 
   return (
     <Container>

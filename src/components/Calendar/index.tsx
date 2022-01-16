@@ -1,12 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator } from 'react-native';
 import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 import { getDaysInMonth } from 'date-fns';
 
 import { IDatePropsDTO } from '../../dtos/IDatePropsDTO';
 import { sumHoursAndMinutes } from '../../utils/sumHoursAndMinutes';
-import { useCalendar } from '../context/calendarContext';
+import { useCalendar } from '../../context/calendarContext';
 
-import { Container, Day, LastRowDay, DayText, HourText } from './styles';
+import {
+  Container,
+  Loading,
+  Day,
+  LastRowDay,
+  DayText,
+  HourText,
+} from './styles';
 
 interface Day {
   id: string | null;
@@ -23,7 +31,7 @@ interface CalendarProps {
 export const Calendar = ({ month, year }: CalendarProps) => {
   const [days, setDays] = useState<Day[]>([]);
 
-  const { reloadValue } = useCalendar();
+  const { loading, setCalendarLoading, reloadValue } = useCalendar();
 
   const isActive = useCallback((day: string) => {
     if (Number(day) === new Date().getDate()) {
@@ -75,42 +83,53 @@ export const Calendar = ({ month, year }: CalendarProps) => {
 
   useEffect(() => {
     const getDays = async () => {
+      setCalendarLoading(true);
       const timerClockRepository = new TimerClockRepository();
 
       const parsed = parseDate(await timerClockRepository.getMonthDays(month));
 
       setDays(parsed);
+
+      setCalendarLoading(false);
     };
 
     getDays();
-  }, [year, month, parseDate, reloadValue]);
+  }, [year, month, parseDate, reloadValue, setCalendarLoading]);
 
   return (
-    <Container>
-      {days.map(
-        (day, index) =>
-          index < 28 && (
-            <Day
-              key={day.text}
-              isAvailable={day.available}
-              isActive={isActive(day.text)}>
-              <DayText>{day.text}</DayText>
-              <HourText>{day.hour}</HourText>
-            </Day>
-          ),
-      )}
+    <>
+      {loading ? (
+        <Loading>
+          <ActivityIndicator size="large" color="#fff" />
+        </Loading>
+      ) : (
+        <Container>
+          {days.map(
+            (day, index) =>
+              index < 28 && (
+                <Day
+                  key={day.text}
+                  isAvailable={day.available}
+                  isActive={isActive(day.text)}>
+                  <DayText>{day.text}</DayText>
+                  <HourText>{day.hour}</HourText>
+                </Day>
+              ),
+          )}
 
-      <LastRowDay>
-        {days.map(
-          (day, index) =>
-            index >= 28 && (
-              <Day key={day.text} isAvailable={day.available} isLastRow>
-                <DayText>{day.text}</DayText>
-                <HourText>{day.hour}</HourText>
-              </Day>
-            ),
-        )}
-      </LastRowDay>
-    </Container>
+          <LastRowDay>
+            {days.map(
+              (day, index) =>
+                index >= 28 && (
+                  <Day key={day.text} isAvailable={day.available} isLastRow>
+                    <DayText>{day.text}</DayText>
+                    <HourText>{day.hour}</HourText>
+                  </Day>
+                ),
+            )}
+          </LastRowDay>
+        </Container>
+      )}
+    </>
   );
 };

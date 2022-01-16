@@ -22,6 +22,10 @@ export const Container = styled.View`
   margin-bottom: 5px;
 `;
 
+export const Loading = styled.View`
+  margin-bottom: 5px;
+`;
+
 export const Day = styled.View<DayProps>`
   margin-top: 5px;
   width: 36px;

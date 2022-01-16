@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useCallback, useState } from 'react';
 
 type CalendarContextData = {
+  loading: boolean;
+  setCalendarLoading: (value: boolean) => void;
   reloadValue: number;
   reloadCalendar: () => void;
 };
@@ -10,14 +12,20 @@ const CalendarContext = createContext<CalendarContextData>(
 );
 
 const CalendarProvider: React.FC = ({ children }) => {
+  const [loading, setLoading] = useState(false);
   const [reloadValue, setReloadValue] = useState(0);
+
+  const setCalendarLoading = useCallback((value: boolean) => {
+    setLoading(value);
+  }, []);
 
   const reloadCalendar = useCallback(() => {
     setReloadValue(reloadValue + 1);
   }, [reloadValue]);
 
   return (
-    <CalendarContext.Provider value={{ reloadValue, reloadCalendar }}>
+    <CalendarContext.Provider
+      value={{ loading, setCalendarLoading, reloadValue, reloadCalendar }}>
       {children}
     </CalendarContext.Provider>
   );

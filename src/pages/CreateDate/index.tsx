@@ -10,7 +10,7 @@ import { compareDate } from '../../utils/compareDate';
 
 import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 import { Clock } from '../../components/Clock';
-import { useCalendar } from '../../components/context/calendarContext';
+import { useCalendar } from '../../context/calendarContext';
 
 import FeatherICon from 'react-native-vector-icons/Feather';
 

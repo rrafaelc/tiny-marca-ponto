@@ -3,7 +3,7 @@ import { Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 
-import { AppProvider } from './components/context';
+import { AppProvider } from './context';
 import { Routes } from './routes';
 
 import { Container, Circle } from './styles';
