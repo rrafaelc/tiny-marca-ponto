@@ -124,23 +124,8 @@ export class TimerClockRepository implements ITimerClockRepository {
     const parseStorage: IDatePropsDTO[] = JSON.parse(storage);
 
     const days = parseStorage.filter(date => {
-      // console.log(date.month + ' - ' + month);
-
       return date.month === month;
     });
-
-    console.log('==START==');
-    // days.forEach(day =>
-    //   day.period.forEach(period =>
-    //     console.log(new Date(period.date).toLocaleString()),
-    //   ),
-    // );
-
-    // days.forEach(day => console.log(day));
-
-    console.log(JSON.stringify(days));
-
-    console.log('==END==');
 
     return days;
   }

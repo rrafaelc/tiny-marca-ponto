@@ -72,8 +72,6 @@ export const Calendar = ({ month, year }: CalendarProps) => {
 
   useEffect(() => {
     const getDays = async () => {
-      console.log(getDaysInMonth(new Date(year, month, 1)) + ' Dias');
-
       const timerClockRepository = new TimerClockRepository();
 
       const parsed = parseDate(await timerClockRepository.getMonthDays(month));
