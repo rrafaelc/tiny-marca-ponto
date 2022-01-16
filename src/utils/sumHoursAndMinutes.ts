@@ -39,7 +39,7 @@ const sumHoursAndMinutes = (date: Date[]) => {
 
   const sumHours = workHours.reduce((acc, curr) => {
     return formatTime(timestrToSec(curr) + timestrToSec(acc));
-  });
+  }, '00:00:00');
 
   return sumHours;
 };

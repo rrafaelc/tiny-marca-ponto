@@ -3,6 +3,7 @@ import { Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 
+import { AppProvider } from './components/context';
 import { Routes } from './routes';
 
 import { Container, Circle } from './styles';
@@ -14,12 +15,14 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Container>
-        <Circle right={-100} top={-80} />
-        <Circle top={height} left={-100} />
-        <Routes />
-      </Container>
-      <Toast visibilityTime={3000} />
+      <AppProvider>
+        <Container>
+          <Circle right={-100} top={-80} />
+          <Circle top={height} left={-100} />
+          <Routes />
+        </Container>
+        <Toast visibilityTime={3000} />
+      </AppProvider>
     </NavigationContainer>
   );
 };

@@ -4,6 +4,7 @@ import { getDaysInMonth } from 'date-fns';
 
 import { IDatePropsDTO } from '../../dtos/IDatePropsDTO';
 import { sumHoursAndMinutes } from '../../utils/sumHoursAndMinutes';
+import { useCalendar } from '../context/calendarContext';
 
 import { Container, Day, LastRowDay, DayText, HourText } from './styles';
 
@@ -21,6 +22,8 @@ interface CalendarProps {
 
 export const Calendar = ({ month, year }: CalendarProps) => {
   const [days, setDays] = useState<Day[]>([]);
+
+  const { reloadValue } = useCalendar();
 
   const isActive = useCallback((day: string) => {
     if (Number(day) === new Date().getDate()) {
@@ -80,7 +83,7 @@ export const Calendar = ({ month, year }: CalendarProps) => {
     };
 
     getDays();
-  }, [year, month, parseDate]);
+  }, [year, month, parseDate, reloadValue]);
 
   return (
     <Container>

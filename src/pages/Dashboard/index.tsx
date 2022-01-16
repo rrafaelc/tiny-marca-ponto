@@ -13,6 +13,9 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 
+import { AppStackParamList } from '../../routes/app.routes';
+import { useCalendar } from '../../components/context/calendarContext';
+
 import {
   DevButtonCreate,
   DevButtonClear,
@@ -34,7 +37,6 @@ import {
   ModalContainer,
 } from './styles';
 
-import { AppStackParamList } from '../../routes/app.routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'Dashboard'>;
@@ -88,6 +90,8 @@ const monthCards: IMonthCardProps[] = [
 export const Dashboard: React.FC<Props> = ({ navigation }) => {
   const [showModal, setShowModal] = useState(false);
 
+  const { reloadCalendar } = useCalendar();
+
   const handleToggleModal = useCallback(() => {
     setShowModal(!showModal);
   }, [showModal]);
@@ -120,7 +124,9 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
         }
       }
 
-      const timeCreated = await timerClockRepository.create(date);
+      await timerClockRepository.create(date);
+
+      reloadCalendar();
 
       Toast.show({
         type: 'success',
@@ -128,8 +134,6 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
       });
 
       setShowModal(false);
-
-      return timeCreated;
     } catch (err) {
       console.log(err);
 
@@ -138,7 +142,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
         text1: 'Aconteceu um erro ao registrar o ponto',
       });
     }
-  }, []);
+  }, [reloadCalendar]);
 
   const handleDevCreate = useCallback(async () => {
     const timerClockRepository = new TimerClockRepository();
@@ -167,11 +171,14 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
       type: 'success',
       text1: 'Ponto registrado com sucesso!',
     });
-  }, []);
+
+    reloadCalendar();
+  }, [reloadCalendar]);
 
   const handleDevClear = useCallback(async () => {
     AsyncStorage.clear();
-  }, []);
+    reloadCalendar();
+  }, [reloadCalendar]);
 
   return (
     <Container>

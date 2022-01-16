@@ -10,6 +10,7 @@ import { compareDate } from '../../utils/compareDate';
 
 import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 import { Clock } from '../../components/Clock';
+import { useCalendar } from '../../components/context/calendarContext';
 
 import FeatherICon from 'react-native-vector-icons/Feather';
 
@@ -35,6 +36,8 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
   const [selectDate, setSelectDate] = useState(new Date());
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const { reloadCalendar } = useCalendar();
 
   const handleGoBack = useCallback(() => {
     setShowConfirmation(false);
@@ -103,8 +106,10 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
       text1: 'Ponto registrado com sucesso!',
     });
 
+    reloadCalendar();
+
     handleGoBack();
-  }, [lastDate, selectDate, handleGoBack]);
+  }, [lastDate, selectDate, reloadCalendar, handleGoBack]);
 
   const formatDate = useCallback((date: Date | null) => {
     if (date) {
