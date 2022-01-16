@@ -148,24 +148,14 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     const timerClockRepository = new TimerClockRepository();
     const date = new Date();
 
-    const _3DaysBefore = new Date(date.getTime() - 3 * 24 * 60 * 60 * 1000);
-    const _2DaysBefore = new Date(date.getTime() - 2 * 24 * 60 * 60 * 1000);
-    const _1DayBefore = new Date(date.getTime() - 1 * 24 * 60 * 60 * 1000);
+    for (let i = 1; i < 6; i++) {
+      const oldDays = new Date(date.getTime() - i * 24 * 60 * 60 * 1000);
 
-    await timerClockRepository.create(new Date(_3DaysBefore.setHours(6, 58)));
-    await timerClockRepository.create(new Date(_3DaysBefore.setHours(12, 2)));
-    await timerClockRepository.create(new Date(_3DaysBefore.setHours(12, 56)));
-    await timerClockRepository.create(new Date(_3DaysBefore.setHours(17, 8)));
-
-    await timerClockRepository.create(new Date(_2DaysBefore.setHours(6, 58)));
-    await timerClockRepository.create(new Date(_2DaysBefore.setHours(12, 2)));
-    await timerClockRepository.create(new Date(_2DaysBefore.setHours(12, 56)));
-    await timerClockRepository.create(new Date(_2DaysBefore.setHours(17, 8)));
-
-    await timerClockRepository.create(new Date(_1DayBefore.setHours(6, 58)));
-    await timerClockRepository.create(new Date(_1DayBefore.setHours(12, 2)));
-    await timerClockRepository.create(new Date(_1DayBefore.setHours(12, 56)));
-    await timerClockRepository.create(new Date(_1DayBefore.setHours(17, 8)));
+      await timerClockRepository.create(new Date(oldDays.setHours(6, 58)));
+      await timerClockRepository.create(new Date(oldDays.setHours(12, 2)));
+      await timerClockRepository.create(new Date(oldDays.setHours(12, 56)));
+      await timerClockRepository.create(new Date(oldDays.setHours(17, 8)));
+    }
 
     Toast.show({
       type: 'success',
