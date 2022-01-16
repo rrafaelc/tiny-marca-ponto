@@ -31,7 +31,17 @@ interface CalendarProps {
 export const Calendar = ({ month, year }: CalendarProps) => {
   const [days, setDays] = useState<Day[]>([]);
 
-  const { loading, setCalendarLoading, reloadValue } = useCalendar();
+  const { loading, setCalendarLoading, reloadValue, setCalendarTotalToday } =
+    useCalendar();
+
+  const totalTodayHours = useCallback(
+    (day: number, hour: string) => {
+      if (day === new Date().getDate()) {
+        setCalendarTotalToday(hour);
+      }
+    },
+    [setCalendarTotalToday],
+  );
 
   const isActive = useCallback((day: string) => {
     if (Number(day) === new Date().getDate()) {
@@ -60,6 +70,8 @@ export const Calendar = ({ month, year }: CalendarProps) => {
           // 00:00:00 -> 00:00
           const hour = `${totalHour[0]}:${totalHour[1]}`;
 
+          totalTodayHours(day.day, hour);
+
           parsedDays.push({
             id: day.id,
             text: String(i).padStart(2, '0'), // 01, 02, ...
@@ -78,7 +90,7 @@ export const Calendar = ({ month, year }: CalendarProps) => {
 
       return parsedDays;
     },
-    [month],
+    [month, totalTodayHours],
   );
 
   useEffect(() => {

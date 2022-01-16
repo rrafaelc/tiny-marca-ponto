@@ -5,6 +5,8 @@ type CalendarContextData = {
   setCalendarLoading: (value: boolean) => void;
   reloadValue: number;
   reloadCalendar: () => void;
+  totalToday: string;
+  setCalendarTotalToday: (today: string) => void;
 };
 
 const CalendarContext = createContext<CalendarContextData>(
@@ -14,6 +16,7 @@ const CalendarContext = createContext<CalendarContextData>(
 const CalendarProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [reloadValue, setReloadValue] = useState(0);
+  const [totalToday, setTotalToday] = useState('--:--');
 
   const setCalendarLoading = useCallback((value: boolean) => {
     setLoading(value);
@@ -23,9 +26,20 @@ const CalendarProvider: React.FC = ({ children }) => {
     setReloadValue(reloadValue + 1);
   }, [reloadValue]);
 
+  const setCalendarTotalToday = useCallback((date: string) => {
+    setTotalToday(date);
+  }, []);
+
   return (
     <CalendarContext.Provider
-      value={{ loading, setCalendarLoading, reloadValue, reloadCalendar }}>
+      value={{
+        loading,
+        setCalendarLoading,
+        reloadValue,
+        reloadCalendar,
+        totalToday,
+        setCalendarTotalToday,
+      }}>
       {children}
     </CalendarContext.Provider>
   );
@@ -34,7 +48,7 @@ const CalendarProvider: React.FC = ({ children }) => {
 const useCalendar = (): CalendarContextData => {
   const context = useContext(CalendarContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useCalendar must be used within an CalendarProvider');
   }
 
   return context;

@@ -72,11 +72,11 @@ export const MonthText = styled.Text`
   color: #d7d7d7;
 `;
 
-export const Period = styled.View`
+export const Total = styled.View`
   flex-direction: row;
 `;
 
-export const PeriodText = styled.Text`
+export const TotalText = styled.Text`
   margin-left: 15px;
   font-size: 14px;
   color: #d7d7d7;

@@ -24,8 +24,8 @@ import {
   HourText,
   Month,
   MonthText,
-  Period,
-  PeriodText,
+  Total,
+  TotalText,
   CalendarNoteText,
   MonthCardList,
   Button,
@@ -90,7 +90,7 @@ const monthCards: IMonthCardProps[] = [
 export const Dashboard: React.FC<Props> = ({ navigation }) => {
   const [showModal, setShowModal] = useState(false);
 
-  const { reloadCalendar, setCalendarLoading } = useCalendar();
+  const { reloadCalendar, setCalendarLoading, totalToday } = useCalendar();
 
   const handleToggleModal = useCallback(() => {
     setShowModal(!showModal);
@@ -202,10 +202,10 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
 
       <Month>
         <MonthText>Maio</MonthText>
-        <Period>
-          <PeriodText>Total hoje</PeriodText>
-          <PeriodText>08:25</PeriodText>
-        </Period>
+        <Total>
+          <TotalText>Horas trabalhadas hoje</TotalText>
+          <TotalText>{totalToday}</TotalText>
+        </Total>
       </Month>
 
       <Calendar month={0} year={2022} />
