@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { IDatePropsDTO } from '../dtos/IDatePropsDTO';
 import { IFindLastDateDTO } from '../dtos/IFindLastDateDTO';
+import { sumHoursAndMinutes } from '../utils/sumHoursAndMinutes';
 
 export class TimerClockRepository implements ITimerClockRepository {
   public async create(date: Date): Promise<IDatePropsDTO> {
@@ -128,5 +129,19 @@ export class TimerClockRepository implements ITimerClockRepository {
     });
 
     return days;
+  }
+
+  public async getTotalMonthHours(month: number): Promise<string> {
+    const days = await this.getMonthDays(month);
+
+    const dates: Date[] = [];
+
+    days.forEach(item =>
+      item.period.forEach(date => dates.push(new Date(date.date))),
+    );
+
+    const total = sumHoursAndMinutes(dates);
+
+    return total;
   }
 }

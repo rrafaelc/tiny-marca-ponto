@@ -38,6 +38,7 @@ import {
 } from './styles';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect } from 'react';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'Dashboard'>;
 
@@ -89,8 +90,10 @@ const monthCards: IMonthCardProps[] = [
 
 export const Dashboard: React.FC<Props> = ({ navigation }) => {
   const [showModal, setShowModal] = useState(false);
+  const [totalHours, setTotalHours] = useState('00 horas e 00 minutos');
 
-  const { reloadCalendar, setCalendarLoading, totalToday } = useCalendar();
+  const { loading, reloadCalendar, setCalendarLoading, totalToday } =
+    useCalendar();
 
   const handleToggleModal = useCallback(() => {
     setShowModal(!showModal);
@@ -144,6 +147,20 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     }
   }, [reloadCalendar]);
 
+  const getTotalHours = useCallback(async (month: number) => {
+    const timerClockRepository = new TimerClockRepository();
+
+    return timerClockRepository.getTotalMonthHours(month);
+  }, []);
+
+  const handleGetTotalHoursComponent = useCallback(async () => {
+    const total = await getTotalHours(new Date().getMonth());
+
+    const hour = total.split(':');
+
+    setTotalHours(`${hour[0]} horas e ${hour[1]} minutos`);
+  }, [getTotalHours]);
+
   const handleDevCreate = useCallback(async () => {
     const timerClockRepository = new TimerClockRepository();
     const date = new Date();
@@ -187,6 +204,10 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     reloadCalendar();
   }, [reloadCalendar, setCalendarLoading]);
 
+  useEffect(() => {
+    handleGetTotalHoursComponent();
+  }, [handleGetTotalHoursComponent, loading]);
+
   return (
     <Container>
       <DevButtonCreate onPress={handleDevCreate}>
@@ -197,7 +218,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
       </DevButtonClear>
       <Clock />
       <Hour>
-        <HourText>207 horas e 10 minutos</HourText>
+        <HourText>{totalHours}</HourText>
       </Hour>
 
       <Month>

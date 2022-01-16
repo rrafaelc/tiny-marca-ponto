@@ -21,7 +21,7 @@ const App = () => {
           <Circle top={height} left={-100} />
           <Routes />
         </Container>
-        <Toast visibilityTime={3000} />
+        <Toast visibilityTime={3000} topOffset={15} />
       </AppProvider>
     </NavigationContainer>
   );

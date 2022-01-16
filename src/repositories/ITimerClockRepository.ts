@@ -5,4 +5,5 @@ export interface ITimerClockRepository {
   create(date: Date): Promise<IDatePropsDTO>;
   findLastDate(): Promise<IFindLastDateDTO | null>;
   getMonthDays(month: number): Promise<IDatePropsDTO[]>;
+  getTotalMonthHours(month: number): Promise<string>;
 }
