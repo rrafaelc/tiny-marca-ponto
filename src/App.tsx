@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Dimensions } from 'react-native';
+import { StatusBar, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 
@@ -16,6 +16,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <AppProvider>
+        <StatusBar barStyle="light-content" backgroundColor="#000" />
         <Container>
           <Circle right={-100} top={-80} />
           <Circle top={height} left={-100} />
