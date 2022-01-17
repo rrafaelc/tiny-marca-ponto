@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import { TimerClockRepository } from '../../repositories/TimerClockRepository';
-import { getDaysInMonth } from 'date-fns';
+import { getDaysInMonth, format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 
 import { IDatePropsDTO } from '../../dtos/IDatePropsDTO';
 import { sumHoursAndMinutes } from '../../utils/sumHoursAndMinutes';
@@ -20,6 +21,7 @@ interface Day {
   id: string | null;
   text: string;
   hour: string;
+  week: string;
   available: boolean;
 }
 
@@ -75,6 +77,13 @@ export const Calendar = ({ month, year }: CalendarProps) => {
         /* Check if has an object with day in current day in month */
         const hasDay = date.filter(item => item.day === i);
 
+        const weekDate = new Date();
+        weekDate.setDate(i);
+        weekDate.setMonth(month);
+        weekDate.setFullYear(year);
+
+        const week = format(weekDate, 'EEEEE', { locale: ptBR });
+
         if (hasDay.length > 0) {
           const day = hasDay[0];
           const dates: Date[] = [];
@@ -92,6 +101,7 @@ export const Calendar = ({ month, year }: CalendarProps) => {
             id: day.id,
             text: String(i).padStart(2, '0'), // 01, 02, ...
             hour: hour,
+            week,
             available: true,
           });
         } else {
@@ -99,6 +109,7 @@ export const Calendar = ({ month, year }: CalendarProps) => {
             id: null,
             text: String(i).padStart(2, '0'), // 01, 02, ...
             hour: '--:--',
+            week,
             available: false,
           });
         }
@@ -106,7 +117,7 @@ export const Calendar = ({ month, year }: CalendarProps) => {
 
       return parsedDays;
     },
-    [totalTodayHours, getDaysDate],
+    [totalTodayHours, getDaysDate, month, year],
   );
 
   useEffect(() => {
@@ -141,7 +152,9 @@ export const Calendar = ({ month, year }: CalendarProps) => {
                   key={day.text}
                   isAvailable={day.available}
                   isActive={isActive(day.text)}>
-                  <DayText>{day.text}</DayText>
+                  <DayText>
+                    {day.week} {day.text}
+                  </DayText>
                   <HourText>{day.hour}</HourText>
                 </Day>
               ),
@@ -153,7 +166,9 @@ export const Calendar = ({ month, year }: CalendarProps) => {
                 (day, index) =>
                   index >= 28 && (
                     <Day key={day.text} isAvailable={day.available} isLastRow>
-                      <DayText>{day.text}</DayText>
+                      <DayText>
+                        {day.week} {day.text}
+                      </DayText>
                       <HourText>{day.hour}</HourText>
                     </Day>
                   ),

@@ -33,8 +33,6 @@ export const Container = styled.ScrollView.attrs(() => ({
   // https://stackoverflow.com/a/62692442
   contentContainerStyle: {
     alignItems: 'center',
-    // paddingVertical: 20,
-    // paddingBottom: 20,
     paddingHorizontal: 30,
   },
 }))`` as unknown as typeof ScrollView;
