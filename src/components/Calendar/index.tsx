@@ -30,32 +30,48 @@ interface CalendarProps {
 
 export const Calendar = ({ month, year }: CalendarProps) => {
   const [days, setDays] = useState<Day[]>([]);
+  const getDaysDate = useCallback(() => {
+    const currentDate = new Date();
+
+    currentDate.setFullYear(year);
+    currentDate.setMonth(month);
+
+    return currentDate;
+  }, [year, month]);
 
   const { loading, setCalendarLoading, reloadValue, setCalendarTotalToday } =
     useCalendar();
 
   const totalTodayHours = useCallback(
     (day: number, hour: string) => {
-      if (day === new Date().getDate()) {
+      if (day === new Date().getDate() && month === new Date().getMonth()) {
         setCalendarTotalToday(hour);
+      } else {
+        setCalendarTotalToday('--:--');
       }
     },
-    [setCalendarTotalToday],
+    [setCalendarTotalToday, month],
   );
 
-  const isActive = useCallback((day: string) => {
-    if (Number(day) === new Date().getDate()) {
-      return true;
-    }
+  const isActive = useCallback(
+    (day: string) => {
+      if (
+        Number(day) === new Date().getDate() &&
+        month === new Date().getMonth()
+      ) {
+        return true;
+      }
 
-    return false;
-  }, []);
+      return false;
+    },
+    [month],
+  );
 
   const parseDate = useCallback(
     (date: IDatePropsDTO[]) => {
       const parsedDays: Day[] = [];
 
-      for (let i = 1; i <= getDaysInMonth(month); i++) {
+      for (let i = 1; i <= getDaysInMonth(getDaysDate()); i++) {
         /* Check if has an object with day in current day in month */
         const hasDay = date.filter(item => item.day === i);
 
@@ -90,7 +106,7 @@ export const Calendar = ({ month, year }: CalendarProps) => {
 
       return parsedDays;
     },
-    [month, totalTodayHours],
+    [totalTodayHours, getDaysDate],
   );
 
   useEffect(() => {
@@ -111,13 +127,13 @@ export const Calendar = ({ month, year }: CalendarProps) => {
   }, [month, year, parseDate, reloadValue, setCalendarLoading]);
 
   return (
-    <>
+    <Container loading={loading}>
       {loading ? (
         <Loading>
           <ActivityIndicator size="large" color="#fff" />
         </Loading>
       ) : (
-        <Container>
+        <>
           {days.map(
             (day, index) =>
               index < 28 && (
@@ -131,19 +147,21 @@ export const Calendar = ({ month, year }: CalendarProps) => {
               ),
           )}
 
-          <LastRowDay>
-            {days.map(
-              (day, index) =>
-                index >= 28 && (
-                  <Day key={day.text} isAvailable={day.available} isLastRow>
-                    <DayText>{day.text}</DayText>
-                    <HourText>{day.hour}</HourText>
-                  </Day>
-                ),
-            )}
-          </LastRowDay>
-        </Container>
+          {getDaysInMonth(getDaysDate()) > 28 && (
+            <LastRowDay>
+              {days.map(
+                (day, index) =>
+                  index >= 28 && (
+                    <Day key={day.text} isAvailable={day.available} isLastRow>
+                      <DayText>{day.text}</DayText>
+                      <HourText>{day.hour}</HourText>
+                    </Day>
+                  ),
+              )}
+            </LastRowDay>
+          )}
+        </>
       )}
-    </>
+    </Container>
   );
 };

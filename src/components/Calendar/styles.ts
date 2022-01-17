@@ -1,13 +1,17 @@
 import { rgba } from 'polished';
 import styled, { css } from 'styled-components/native';
 
-type DayProps = {
+interface IContainerProps {
+  loading: boolean;
+}
+
+interface IDayProps {
   isAvailable: boolean;
   isActive?: boolean;
   isLastRow?: boolean;
-};
+}
 
-export const Container = styled.View`
+export const Container = styled.View<IContainerProps>`
   width: 302px;
   padding: 10px;
   padding-top: 5px;
@@ -19,14 +23,22 @@ export const Container = styled.View`
   flex-wrap: wrap;
   justify-content: space-between;
 
+  ${({ loading }) =>
+    loading &&
+    css`
+      justify-content: center;
+      height: 220px;
+    `}
+
   margin-bottom: 5px;
 `;
 
 export const Loading = styled.View`
-  margin-bottom: 5px;
+  height: 100%;
+  justify-content: center;
 `;
 
-export const Day = styled.View<DayProps>`
+export const Day = styled.View<IDayProps>`
   margin-top: 5px;
   width: 36px;
   height: 36px;

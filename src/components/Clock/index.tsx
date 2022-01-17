@@ -5,10 +5,10 @@ import { Container } from './styles';
 
 export const Clock = () => {
   const [dateFormatted, setDateFormatted] = useState(
-    format(new Date(), 'HH:mm:ss'),
+    format(new Date(), 'HH:mm'),
   );
 
-  const formatDate = useCallback(() => format(new Date(), 'HH:mm:ss'), []);
+  const formatDate = useCallback(() => format(new Date(), 'HH:mm'), []);
 
   useEffect(() => {
     const interval = setInterval(() => {
