@@ -72,6 +72,11 @@ export const MonthText = styled.Text`
   color: #d7d7d7;
 `;
 
+export const ReloadMonthButton = styled.TouchableOpacity`
+  flex: 1;
+  margin-left: 10px;
+`;
+
 export const Total = styled.View`
   flex-direction: row;
 `;

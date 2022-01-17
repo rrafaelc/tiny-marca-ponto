@@ -118,21 +118,27 @@ export class TimerClockRepository implements ITimerClockRepository {
     return null;
   }
 
-  public async getMonthDays(month: number): Promise<IDatePropsDTO[]> {
+  public async getMonthDays(
+    month: number,
+    year: number,
+  ): Promise<IDatePropsDTO[]> {
     const storage =
       (await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto')) || '[]';
 
     const parseStorage: IDatePropsDTO[] = JSON.parse(storage);
 
     const days = parseStorage.filter(date => {
-      return date.month === month;
+      return date.month === month && date.year === year;
     });
 
     return days;
   }
 
-  public async getTotalMonthHours(month: number): Promise<string> {
-    const days = await this.getMonthDays(month);
+  public async getTotalMonthHours(
+    month: number,
+    year: number,
+  ): Promise<string> {
+    const days = await this.getMonthDays(month, year);
 
     const dates: Date[] = [];
 

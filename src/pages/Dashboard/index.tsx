@@ -24,6 +24,7 @@ import {
   HourText,
   Month,
   MonthText,
+  ReloadMonthButton,
   Total,
   TotalText,
   CalendarNoteText,
@@ -89,6 +90,8 @@ const monthCards: IMonthCardProps[] = [
 ];
 
 export const Dashboard: React.FC<Props> = ({ navigation }) => {
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [showModal, setShowModal] = useState(false);
   const [totalHours, setTotalHours] = useState('00 horas e 00 minutos');
 
@@ -147,19 +150,19 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     }
   }, [reloadCalendar]);
 
-  const getTotalHours = useCallback(async (month: number) => {
+  const getTotalHours = useCallback(async (month: number, year: number) => {
     const timerClockRepository = new TimerClockRepository();
 
-    return timerClockRepository.getTotalMonthHours(month);
+    return timerClockRepository.getTotalMonthHours(month, year);
   }, []);
 
   const handleGetTotalHoursComponent = useCallback(async () => {
-    const total = await getTotalHours(new Date().getMonth());
+    const total = await getTotalHours(selectedMonth, selectedYear);
 
     const hour = total.split(':');
 
     setTotalHours(`${hour[0]} horas e ${hour[1]} minutos`);
-  }, [getTotalHours]);
+  }, [selectedMonth, selectedYear, getTotalHours]);
 
   const handleDevCreate = useCallback(async () => {
     const timerClockRepository = new TimerClockRepository();
@@ -167,7 +170,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
 
     setCalendarLoading(true);
 
-    for (let i = 1; i < 8; i++) {
+    for (let i = 1; i < 7; i++) {
       const oldDays = new Date(date.getTime() - i * 24 * 60 * 60 * 1000);
       const random = () => Math.random() * (60 - 0) + 0;
 
@@ -223,13 +226,16 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
 
       <Month>
         <MonthText>Maio</MonthText>
+        <ReloadMonthButton>
+          <FeatherIcon name="rotate-cw" size={18} color="#d7d7d7" />
+        </ReloadMonthButton>
         <Total>
-          <TotalText>Horas trabalhadas hoje</TotalText>
+          <TotalText>Hoje</TotalText>
           <TotalText>{totalToday}</TotalText>
         </Total>
       </Month>
 
-      <Calendar month={0} year={2022} />
+      <Calendar month={selectedMonth} year={selectedYear} />
       <CalendarNoteText>Nota: Clique em um dia para editar</CalendarNoteText>
 
       <MonthCardList

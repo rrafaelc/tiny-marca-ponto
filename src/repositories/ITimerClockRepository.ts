@@ -4,6 +4,6 @@ import { IFindLastDateDTO } from '../dtos/IFindLastDateDTO';
 export interface ITimerClockRepository {
   create(date: Date): Promise<IDatePropsDTO>;
   findLastDate(): Promise<IFindLastDateDTO | null>;
-  getMonthDays(month: number): Promise<IDatePropsDTO[]>;
-  getTotalMonthHours(month: number): Promise<string>;
+  getMonthDays(month: number, year: number): Promise<IDatePropsDTO[]>;
+  getTotalMonthHours(month: number, year: number): Promise<string>;
 }

@@ -98,7 +98,9 @@ export const Calendar = ({ month, year }: CalendarProps) => {
       setCalendarLoading(true);
       const timerClockRepository = new TimerClockRepository();
 
-      const parsed = parseDate(await timerClockRepository.getMonthDays(month));
+      const parsed = parseDate(
+        await timerClockRepository.getMonthDays(month, year),
+      );
 
       setDays(parsed);
 
@@ -106,7 +108,7 @@ export const Calendar = ({ month, year }: CalendarProps) => {
     };
 
     getDays();
-  }, [year, month, parseDate, reloadValue, setCalendarLoading]);
+  }, [month, year, parseDate, reloadValue, setCalendarLoading]);
 
   return (
     <>
