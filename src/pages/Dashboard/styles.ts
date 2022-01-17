@@ -11,7 +11,7 @@ type IButtonTextProps = IButtonProps;
 export const DevButtonCreate = styled.TouchableOpacity`
   position: absolute;
   top: 20px;
-  left: 10px;
+  left: 20px;
 
   background-color: #299647;
   padding: 10px;
@@ -21,7 +21,7 @@ export const DevButtonCreate = styled.TouchableOpacity`
 export const DevButtonClear = styled.TouchableOpacity`
   position: absolute;
   top: 20px;
-  right: 10px;
+  right: 20px;
 
   background-color: #ff0000;
   padding: 10px;
@@ -42,7 +42,6 @@ export const Container = styled.ScrollView.attrs(() => ({
 export const Hour = styled.View`
   width: 250px;
   height: 40px;
-  margin: 20px 0;
   background-color: ${rgba('#42138f', 0.75)};
 
   border-radius: 10px;

@@ -179,20 +179,35 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     [getTotalHours],
   );
 
-  const handleCardSelect = useCallback(({ id, month }: IHandleCardSelect) => {
-    setCardSelectedId(id);
-    setSelectedMonth(month);
+  const handleCardSelect = useCallback(
+    ({ id, month }: IHandleCardSelect) => {
+      if (id === cardSelectedId) {
+        setCardSelectedId(-1);
+        setSelectedMonth(new Date().getMonth());
+        setSelectedYear(new Date().getFullYear());
 
-    setMonthText(format(new Date().setMonth(month), 'MMMM', { locale: ptBR }));
+        setMonthText(format(new Date(), 'MMMM', { locale: ptBR }));
 
-    const future = isFuture(new Date().setMonth(month));
+        return;
+      }
 
-    if (future) {
-      setSelectedYear(new Date().getFullYear() - 1);
-    } else {
-      setSelectedYear(new Date().getFullYear());
-    }
-  }, []);
+      setCardSelectedId(id);
+      setSelectedMonth(month);
+
+      setMonthText(
+        format(new Date().setMonth(month), 'MMMM', { locale: ptBR }),
+      );
+
+      const future = isFuture(new Date().setMonth(month));
+
+      if (future) {
+        setSelectedYear(new Date().getFullYear() - 1);
+      } else {
+        setSelectedYear(new Date().getFullYear());
+      }
+    },
+    [cardSelectedId],
+  );
 
   const handleResetMonth = useCallback(() => {
     const currentDate = new Date();
@@ -259,7 +274,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
       <DevButtonClear onPress={handleDevClear}>
         <FeatherIcon name="trash-2" size={20} color="#fff" />
       </DevButtonClear>
-      {/* <Clock /> */}
+      <Clock />
       <Hour>
         <HourText>{totalHours}</HourText>
       </Hour>
