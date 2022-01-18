@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AppStackParamList } from '../../routes/app.routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { IDatePropsDTO } from '../../dtos/IDatePropsDTO';
+import { IDayPropsDTO } from '../../dtos/IDayPropsDTO';
 import { sumHoursAndMinutes } from '../../utils/sumHoursAndMinutes';
 import { useCalendar } from '../../context/calendarContext';
 
@@ -83,11 +83,12 @@ export const Calendar: React.FC<CalendarProps> = ({ month, year }) => {
   );
 
   const parseDate = useCallback(
-    (date: IDatePropsDTO[]) => {
+    (date: IDayPropsDTO[]) => {
       const parsedDays: Day[] = [];
 
       for (let i = 1; i <= getDaysInMonth(getDaysDate()); i++) {
         /* Check if has an object with day in current day in month */
+
         const hasDay = date.filter(item => item.day === i);
 
         const weekDate = new Date();
@@ -151,11 +152,14 @@ export const Calendar: React.FC<CalendarProps> = ({ month, year }) => {
 
       if (day.id === null) {
         console.log('Criar um dia nesse horario, nova pagina');
-        // navigation.navigate('EditHours', { day_id: 'ID' });
+
+        return;
       }
+
+      navigation.navigate('EditHours', { day_id: day.id });
     },
 
-    [month, year],
+    [month, year, navigation],
   );
 
   useEffect(() => {

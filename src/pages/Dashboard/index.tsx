@@ -76,9 +76,9 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     setShowModal(!showModal);
   }, [showModal]);
 
-  const handleNavigationCreateDate = useCallback(() => {
+  const handleNavigationCreateDay = useCallback(() => {
     setShowModal(false);
-    navigation.navigate('CreateDate');
+    navigation.navigate('CreateDay');
   }, [navigation]);
 
   const handleCreateTimerClock = useCallback(async () => {
@@ -314,7 +314,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
 
               <ModalButton
                 activeOpacity={0.6}
-                onPress={handleNavigationCreateDate}>
+                onPress={handleNavigationCreateDay}>
                 <ModalText>Hora Personalizada</ModalText>
               </ModalButton>
 

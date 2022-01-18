@@ -29,9 +29,9 @@ import {
   CheckIcon,
 } from './styles';
 
-type Props = NativeStackScreenProps<AppStackParamList, 'CreateDate'>;
+type Props = NativeStackScreenProps<AppStackParamList, 'CreateDay'>;
 
-export const CreateDate: React.FC<Props> = ({ navigation }) => {
+export const CreateDay: React.FC<Props> = ({ navigation }) => {
   const [lastDate, setLastDate] = useState<Date | null>(null);
   const [selectDate, setSelectDate] = useState(new Date());
   const [showConfirmation, setShowConfirmation] = useState(false);
