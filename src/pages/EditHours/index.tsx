@@ -6,6 +6,8 @@ import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Toast from 'react-native-toast-message';
 
+import FeatherIcon from 'react-native-vector-icons/Feather';
+
 import { compareDate } from '../../utils/compareDate';
 
 import { TimerClockRepository } from '../../repositories/TimerClockRepository';
@@ -14,18 +16,69 @@ import { useCalendar } from '../../context/calendarContext';
 
 import FeatherICon from 'react-native-vector-icons/Feather';
 
+const days = [
+  {
+    id: '1',
+    hour: '06:56',
+    type: 'in',
+  },
+  {
+    id: '2',
+    hour: '06:56',
+    type: 'out',
+  },
+  {
+    id: '3',
+    hour: '06:56',
+    type: 'in',
+  },
+  {
+    id: '4',
+    hour: '06:56',
+    type: 'out',
+  },
+  {
+    id: '5',
+    hour: '06:56',
+    type: 'in',
+  },
+  {
+    id: '6',
+    hour: '06:56',
+    type: 'out',
+  },
+  {
+    id: '7',
+    hour: '06:56',
+    type: 'in',
+  },
+  {
+    id: '8',
+    hour: '06:56',
+    type: 'out',
+  },
+  {
+    id: '9',
+    hour: '06:56',
+    type: 'in',
+  },
+  {
+    id: '10',
+    hour: '06:56',
+    type: 'out',
+  },
+];
+
 import {
   Container,
   ArrowIcon,
-  ContainerDate,
-  LastDate,
-  LastDateTitle,
-  DateText,
+  ContainerDays,
+  ContainerList,
+  DayTextTitle,
+  DateList,
+  Hour,
   HourText,
-  SelectDate,
-  SelectDateText,
-  HourSelected,
-  HourSelectedText,
+  ButtonEditHour,
   CheckIcon,
 } from './styles';
 
@@ -136,7 +189,7 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
       .findLastDate()
       .then(response => {
         if (response !== null) {
-          setLastDate(response.date);
+          // setLastDate(response.date);
         }
       })
       .catch(err => {
@@ -158,31 +211,35 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
       </ArrowIcon>
       <Clock />
 
-      <ContainerDate>
-        <LastDate>
-          <LastDateTitle>Último horário registrado</LastDateTitle>
-          <DateText>
-            {formatDate(lastDate)}
-            <HourText> {formatHour(lastDate)}</HourText>
-          </DateText>
-        </LastDate>
+      <ContainerDays>
+        <DayTextTitle>14/02/2022</DayTextTitle>
+        <ContainerList>
+          <DateList
+            data={days}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item: day }) => (
+              <Hour>
+                <FeatherIcon
+                  name={
+                    day.type === 'in' ? 'arrow-down-circle' : 'arrow-up-circle'
+                  }
+                  size={24}
+                  color={day.type === 'in' ? '#299647' : '#DE4E4E'}
+                />
+                <HourText>{day.hour}</HourText>
+                <ButtonEditHour>
+                  <FeatherIcon name="edit" size={24} />
+                </ButtonEditHour>
+              </Hour>
+            )}
+            keyExtractor={day => day.id}
+          />
+        </ContainerList>
+      </ContainerDays>
 
-        <SelectDate onPress={handleToggleDatePicker}>
-          <FeatherICon name="clock" size={20} color="#d7d7d7" />
-          <SelectDateText>Selecionar horário</SelectDateText>
-        </SelectDate>
-
-        {showConfirmation && (
-          <>
-            <HourSelected onPress={handleToggleDatePicker}>
-              <HourSelectedText>{formatHour(selectDate)}</HourSelectedText>
-            </HourSelected>
-            <CheckIcon onPress={handleConfirmation}>
-              <FeatherICon name="check" size={30} color="#d7d7d7" />
-            </CheckIcon>
-          </>
-        )}
-      </ContainerDate>
+      <CheckIcon onPress={() => {}}>
+        <FeatherICon name="check" size={30} color="#d7d7d7" />
+      </CheckIcon>
 
       {showDatePicker && (
         <DateTimePicker

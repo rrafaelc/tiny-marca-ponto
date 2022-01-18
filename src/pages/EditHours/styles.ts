@@ -1,8 +1,10 @@
 import styled from 'styled-components/native';
+import { rgba } from 'polished';
+import { FlatList, ScrollView } from 'react-native';
 
 export const Container = styled.View`
-  align-items: center;
   flex: 1;
+  align-items: center;
 `;
 
 export const ArrowIcon = styled.TouchableOpacity`
@@ -11,64 +13,47 @@ export const ArrowIcon = styled.TouchableOpacity`
   left: 15px;
 `;
 
-export const ContainerDate = styled.View`
+export const ContainerDays = styled.View`
   flex: 1;
+  justify-content: center;
   align-items: center;
-  justify-content: flex-end;
-  padding-bottom: 150px;
 `;
 
-export const LastDate = styled.View`
+export const DayTextTitle = styled.Text`
+  font-size: 18px;
+  color: #d7d7d7;
+  margin-bottom: 20px;
+`;
+
+export const ContainerList = styled.View`
+  height: 200px;
+  padding: 20px;
+
   align-items: center;
   justify-content: center;
 
-  margin-bottom: 10px;
+  border-radius: 10px;
+  background: ${rgba('#12062C', 0.9)};
 `;
 
-export const LastDateTitle = styled.Text`
-  font-size: 20px;
-  color: #d7d7d7;
-`;
+export const DateList = styled.FlatList.attrs(
+  () => ({}),
+)`` as unknown as typeof FlatList;
 
-export const DateText = styled.Text`
-  font-size: 20px;
-  color: #d7d7d7;
+export const Hour = styled.View`
+  margin-bottom: 20px;
+  flex-direction: row;
 `;
 
 export const HourText = styled.Text`
-  font-weight: bold;
-`;
-
-export const SelectDate = styled.TouchableOpacity`
-  padding: 10px;
-  border-radius: 10px;
-  background: #12062c;
-
-  flex-direction: row;
-  align-items: center;
-
-  margin-bottom: 10px;
-`;
-
-export const SelectDateText = styled.Text`
-  font-size: 14px;
-  color: #d7d7d7;
-  margin-left: 8px;
-`;
-
-export const HourSelected = styled.TouchableOpacity`
-  padding: 10px;
-  border-radius: 10px;
-  background: #299647;
-
-  align-items: center;
-  justify-content: center;
-`;
-
-export const HourSelectedText = styled.Text`
   font-size: 18px;
+  font-weight: bold;
   color: #d7d7d7;
+
+  margin: 0 15px;
 `;
+
+export const ButtonEditHour = styled.TouchableOpacity``;
 
 export const CheckIcon = styled.TouchableOpacity`
   position: absolute;

@@ -150,4 +150,8 @@ export class TimerClockRepository implements ITimerClockRepository {
 
     return total;
   }
+
+  public async findLastDay(day_id: string): Promise<IDatePropsDTO | null> {
+    return null;
+  }
 }

@@ -149,13 +149,18 @@ export const Calendar: React.FC<CalendarProps> = ({ month, year }) => {
         return;
       }
 
+      if (new Date().getDate() === localDate.getDate()) {
+        return;
+      }
+
       if (day.id === null) {
         console.log('Criar um dia nesse horario, nova pagina');
-        // navigation.navigate('EditHours', { day_id: 'ID' });
-      }
-    },
 
-    [month, year],
+        return;
+      }
+      navigation.navigate('EditHours', { day_id: 'ID' });
+    },
+    [month, year, navigation],
   );
 
   useEffect(() => {
