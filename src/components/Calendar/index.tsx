@@ -1,8 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import { TimerClockRepository } from '../../repositories/TimerClockRepository';
-import { getDaysInMonth, format } from 'date-fns';
+import { getDaysInMonth, format, isFuture } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
+import Toast from 'react-native-toast-message';
+
+import { useNavigation } from '@react-navigation/native';
+import { AppStackParamList } from '../../routes/app.routes';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { IDatePropsDTO } from '../../dtos/IDatePropsDTO';
 import { sumHoursAndMinutes } from '../../utils/sumHoursAndMinutes';
@@ -25,13 +30,21 @@ interface Day {
   available: boolean;
 }
 
+type EditHoursScreenProp = NativeStackNavigationProp<
+  AppStackParamList,
+  'EditHours'
+>;
+
 interface CalendarProps {
   month: number;
   year: number;
 }
 
-export const Calendar = ({ month, year }: CalendarProps) => {
+export const Calendar: React.FC<CalendarProps> = ({ month, year }) => {
   const [days, setDays] = useState<Day[]>([]);
+
+  const navigation = useNavigation<EditHoursScreenProp>();
+
   const getDaysDate = useCallback(() => {
     const currentDate = new Date();
 
@@ -90,7 +103,7 @@ export const Calendar = ({ month, year }: CalendarProps) => {
 
           day.period.forEach(period => dates.push(new Date(period.date)));
 
-          const totalHour = sumHoursAndMinutes(dates).split(':');
+          const totalHour = sumHoursAndMinutes(dates.sort()).split(':');
 
           // 00:00:00 -> 00:00
           const hour = `${totalHour[0]}:${totalHour[1]}`;
@@ -118,6 +131,31 @@ export const Calendar = ({ month, year }: CalendarProps) => {
       return parsedDays;
     },
     [totalTodayHours, getDaysDate, month, year],
+  );
+
+  const handleEditHour = useCallback(
+    (day: Day) => {
+      const localDate = new Date();
+      localDate.setMonth(month);
+      localDate.setFullYear(year);
+      localDate.setDate(Number(day.text));
+
+      if (isFuture(localDate)) {
+        Toast.show({
+          type: 'info',
+          text1: 'Não permitido editar datas futuras',
+        });
+
+        return;
+      }
+
+      if (day.id === null) {
+        console.log('Criar um dia nesse horario, nova pagina');
+        // navigation.navigate('EditHours', { day_id: 'ID' });
+      }
+    },
+
+    [month, year],
   );
 
   useEffect(() => {
@@ -149,6 +187,7 @@ export const Calendar = ({ month, year }: CalendarProps) => {
             (day, index) =>
               index < 28 && (
                 <Day
+                  onPress={() => handleEditHour(day)}
                   key={day.text}
                   isAvailable={day.available}
                   isActive={isActive(day.text)}>
@@ -165,7 +204,11 @@ export const Calendar = ({ month, year }: CalendarProps) => {
               {days.map(
                 (day, index) =>
                   index >= 28 && (
-                    <Day key={day.text} isAvailable={day.available} isLastRow>
+                    <Day
+                      onPress={() => handleEditHour(day)}
+                      key={day.text}
+                      isAvailable={day.available}
+                      isLastRow>
                       <DayText>
                         {day.week} {day.text}
                       </DayText>

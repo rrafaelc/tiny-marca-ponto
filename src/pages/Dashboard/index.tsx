@@ -32,12 +32,13 @@ import {
   CalendarNoteText,
   MonthCardList,
   Button,
-  ButtonText,
+  ModalContainer,
   Modal,
+  ModalTitleContainer,
+  ModalTitle,
   ModalCloseIcon,
   ModalButton,
   ModalText,
-  ModalContainer,
 } from './styles';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -179,35 +180,20 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     [getTotalHours],
   );
 
-  const handleCardSelect = useCallback(
-    ({ id, month }: IHandleCardSelect) => {
-      if (id === cardSelectedId) {
-        setCardSelectedId(-1);
-        setSelectedMonth(new Date().getMonth());
-        setSelectedYear(new Date().getFullYear());
+  const handleCardSelect = useCallback(({ id, month }: IHandleCardSelect) => {
+    setCardSelectedId(id);
+    setSelectedMonth(month);
 
-        setMonthText(format(new Date(), 'MMMM', { locale: ptBR }));
+    setMonthText(format(new Date().setMonth(month), 'MMMM', { locale: ptBR }));
 
-        return;
-      }
+    const future = isFuture(new Date().setMonth(month));
 
-      setCardSelectedId(id);
-      setSelectedMonth(month);
-
-      setMonthText(
-        format(new Date().setMonth(month), 'MMMM', { locale: ptBR }),
-      );
-
-      const future = isFuture(new Date().setMonth(month));
-
-      if (future) {
-        setSelectedYear(new Date().getFullYear() - 1);
-      } else {
-        setSelectedYear(new Date().getFullYear());
-      }
-    },
-    [cardSelectedId],
-  );
+    if (future) {
+      setSelectedYear(new Date().getFullYear() - 1);
+    } else {
+      setSelectedYear(new Date().getFullYear());
+    }
+  }, []);
 
   const handleResetMonth = useCallback(() => {
     const currentDate = new Date();
@@ -311,20 +297,19 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
         keyExtractor={card => String(card.id)}
       />
 
-      <Button activeOpacity={0.6} color="#c4c4c4">
-        <ButtonText color="#000">Configurações</ButtonText>
-      </Button>
-
-      <Button activeOpacity={0.6} color="#299647" onPress={handleToggleModal}>
-        <ButtonText color="#d7d7d7">Marcar Ponto</ButtonText>
+      <Button activeOpacity={0.6} onPress={handleToggleModal}>
+        <FeatherIcon name="plus-circle" size={60} color="#d7d7d7" />
       </Button>
 
       {showModal && (
         <TouchableWithoutFeedback onPress={handleToggleModal}>
           <ModalContainer>
+            <ModalTitleContainer>
+              <ModalTitle>Registrar horário</ModalTitle>
+            </ModalTitleContainer>
             <Modal>
               <ModalCloseIcon onPress={handleToggleModal}>
-                <FeatherIcon name="x-circle" size={20} color="#d7d7d7" />
+                <FeatherIcon name="x-circle" size={30} color="#d7d7d7" />
               </ModalCloseIcon>
 
               <ModalButton

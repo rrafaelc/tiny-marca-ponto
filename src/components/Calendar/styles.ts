@@ -38,7 +38,7 @@ export const Loading = styled.View`
   justify-content: center;
 `;
 
-export const Day = styled.View<IDayProps>`
+export const Day = styled.TouchableOpacity<IDayProps>`
   margin-top: 5px;
   width: 36px;
   height: 36px;

@@ -2,12 +2,6 @@ import styled from 'styled-components/native';
 import { FlatList, ScrollView } from 'react-native';
 import { rgba } from 'polished';
 
-interface IButtonProps {
-  color: string;
-}
-
-type IButtonTextProps = IButtonProps;
-
 export const DevButtonCreate = styled.TouchableOpacity`
   position: absolute;
   top: 20px;
@@ -32,6 +26,7 @@ export const DevButtonClear = styled.TouchableOpacity`
 export const Container = styled.ScrollView.attrs(() => ({
   // https://stackoverflow.com/a/62692442
   contentContainerStyle: {
+    flex: 1,
     alignItems: 'center',
     paddingHorizontal: 30,
   },
@@ -98,19 +93,9 @@ export const MonthCardList = styled.FlatList`
   margin-bottom: 25px;
 ` as unknown as typeof FlatList;
 
-export const Button = styled.TouchableOpacity<IButtonProps>`
-  width: 100%;
-  padding: 10px 0;
+export const Button = styled.TouchableOpacity`
   margin-bottom: 20px;
-  border-radius: 10px;
-  background-color: ${({ color }) => color};
-
-  align-items: center;
-`;
-
-export const ButtonText = styled.Text<IButtonTextProps>`
-  font-size: 18px;
-  color: ${({ color }) => color};
+  padding: 10px;
 `;
 
 export const ModalContainer = styled.View`
@@ -122,38 +107,52 @@ export const ModalContainer = styled.View`
 
   justify-content: flex-end;
   align-items: center;
+  padding: 0 20px;
   padding-bottom: 80px;
+
+  background: ${rgba('#000', 0.6)};
 `;
 
 export const Modal = styled.View`
-  background: ${rgba('#12062c', 0.9)};
+  width: 100%;
 
-  width: 219px;
-  padding: 15px 0;
-  height: 100px;
-  border-radius: 10px;
+  align-items: center;
+`;
 
-  justify-content: space-between;
+export const ModalTitleContainer = styled.View`
+  position: absolute;
+  top: 10px;
+
+  background-color: #000;
+  border-radius: 15px;
+  padding: 10px;
+`;
+
+export const ModalTitle = styled.Text`
+  font-weight: bold;
+  font-size: 30px;
+  color: #ccc;
+  justify-content: center;
   align-items: center;
 `;
 
 export const ModalButton = styled.TouchableOpacity`
-  width: 150px;
-  margin-right: 10px;
-  background: #c4c4c4;
+  width: 210px;
+  padding: 15px 0;
+  margin-bottom: 25px;
+  background: #342457;
   align-items: center;
-  padding: 5px 0;
-  border-radius: 7px;
+  border-radius: 15px;
 `;
 
 export const ModalText = styled.Text`
-  color: #000;
-  font-size: 14px;
+  color: #d7d7d7;
+  font-size: 18px;
 `;
 
 export const ModalCloseIcon = styled.TouchableOpacity`
   position: absolute;
-  top: 4px;
-  right: 4px;
-  padding: 4px;
+  top: -60px;
+  right: 25px;
+  padding: 8px;
 `;
