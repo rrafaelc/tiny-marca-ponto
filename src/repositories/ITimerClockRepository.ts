@@ -1,10 +1,9 @@
-import { IDayPropsDTO } from '../dtos/IDayPropsDTO';
-import { IFindLastDayDTO } from '../dtos/IFindLastDayDTO';
+import { IDatePropsDTO } from '../dtos/IDatePropsDTO';
+import { IFindLastDateDTO } from '../dtos/IFindLastDateDTO';
 
 export interface ITimerClockRepository {
-  create(date: Date): Promise<IDayPropsDTO>;
-  findLastDate(): Promise<IFindLastDayDTO | null>;
-  getMonthDays(month: number, year: number): Promise<IDayPropsDTO[]>;
+  create(date: Date): Promise<IDatePropsDTO>;
+  findLastDate(): Promise<IFindLastDateDTO | null>;
+  getMonthDays(month: number, year: number): Promise<IDatePropsDTO[]>;
   getTotalMonthHours(month: number, year: number): Promise<string>;
-  findDay(day_id: string): Promise<IDayPropsDTO>;
 }

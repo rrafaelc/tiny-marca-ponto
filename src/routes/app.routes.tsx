@@ -2,12 +2,12 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { Dashboard } from '../pages/Dashboard';
-import { CreateDay } from '../pages/CreateDay';
+import { CreateDate } from '../pages/CreateDate';
 import { EditHours } from '../pages/EditHours';
 
 export type AppStackParamList = {
   Dashboard: undefined;
-  CreateDay: undefined;
+  CreateDate: undefined;
   EditHours: { day_id: string };
 };
 
@@ -21,7 +21,7 @@ export const AppRoutes = () => {
         contentStyle: { backgroundColor: 'transparent' },
       }}>
       <Stack.Screen name="Dashboard" component={Dashboard} />
-      <Stack.Screen name="CreateDay" component={CreateDay} />
+      <Stack.Screen name="CreateDate" component={CreateDate} />
       <Stack.Screen name="EditHours" component={EditHours} />
     </Stack.Navigator>
   );

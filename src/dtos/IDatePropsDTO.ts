@@ -1,4 +1,4 @@
-export interface IDayPropsDTO {
+export interface IDatePropsDTO {
   id: string;
   day: number;
   month: number;

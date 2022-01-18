@@ -2,16 +2,16 @@ import { v4 as uuid } from 'uuid';
 import { ITimerClockRepository } from './ITimerClockRepository';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { IDayPropsDTO } from '../dtos/IDayPropsDTO';
-import { IFindLastDayDTO } from '../dtos/IFindLastDayDTO';
+import { IDatePropsDTO } from '../dtos/IDatePropsDTO';
+import { IFindLastDateDTO } from '../dtos/IFindLastDateDTO';
 import { sumHoursAndMinutes } from '../utils/sumHoursAndMinutes';
 
 export class TimerClockRepository implements ITimerClockRepository {
-  public async create(date: Date): Promise<IDayPropsDTO> {
+  public async create(date: Date): Promise<IDatePropsDTO> {
     const storage =
       (await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto')) || '[]';
 
-    const jsonStorage: IDayPropsDTO[] = JSON.parse(storage);
+    const jsonStorage: IDatePropsDTO[] = JSON.parse(storage);
 
     // Find if already has a saved day
     const findIndex = jsonStorage.findIndex(
@@ -61,7 +61,7 @@ export class TimerClockRepository implements ITimerClockRepository {
       return newRegister;
     }
 
-    const registerTimer: IDayPropsDTO = {
+    const registerTimer: IDatePropsDTO = {
       id: uuid(),
       day: date.getDate(),
       month: date.getMonth(),
@@ -94,11 +94,11 @@ export class TimerClockRepository implements ITimerClockRepository {
     return registerTimer;
   }
 
-  public async findLastDate(): Promise<IFindLastDayDTO | null> {
+  public async findLastDate(): Promise<IFindLastDateDTO | null> {
     const storage = await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto');
 
     if (storage) {
-      const parseStorage: IDayPropsDTO[] = JSON.parse(storage);
+      const parseStorage: IDatePropsDTO[] = JSON.parse(storage);
 
       const allDates: number[] = [];
 
@@ -121,11 +121,11 @@ export class TimerClockRepository implements ITimerClockRepository {
   public async getMonthDays(
     month: number,
     year: number,
-  ): Promise<IDayPropsDTO[]> {
+  ): Promise<IDatePropsDTO[]> {
     const storage =
       (await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto')) || '[]';
 
-    const parseStorage: IDayPropsDTO[] = JSON.parse(storage);
+    const parseStorage: IDatePropsDTO[] = JSON.parse(storage);
 
     const days = parseStorage.filter(date => {
       return date.month === month && date.year === year;
