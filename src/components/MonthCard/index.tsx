@@ -16,7 +16,7 @@ type MonthCardProps = {
   month: number;
   hour: string;
   minute: string;
-  disabled: boolean;
+  loading: boolean;
   callback: (data: CardSelected) => void;
 };
 
@@ -26,7 +26,7 @@ export const MonthCard: React.FC<MonthCardProps> = ({
   month,
   hour,
   minute,
-  disabled,
+  loading,
   callback,
 }) => {
   const monthParsed = useMemo(() => {
@@ -43,9 +43,9 @@ export const MonthCard: React.FC<MonthCardProps> = ({
     <Container
       activeOpacity={1}
       selected={selected === id}
-      disabled={disabled}
+      disabled={loading}
       onPress={handleCallback}>
-      {disabled ? (
+      {loading ? (
         <ActivityIndicator size="large" color="#d7d7d7" />
       ) : (
         <>

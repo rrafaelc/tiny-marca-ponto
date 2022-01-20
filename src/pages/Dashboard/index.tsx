@@ -34,8 +34,6 @@ import {
   Button,
   ModalContainer,
   Modal,
-  ModalTitleContainer,
-  ModalTitle,
   ModalCloseIcon,
   ModalButton,
   ModalText,
@@ -76,9 +74,9 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     setShowModal(!showModal);
   }, [showModal]);
 
-  const handleNavigationCreateDate = useCallback(() => {
+  const handleNavigationCreateCustomDate = useCallback(() => {
     setShowModal(false);
-    navigation.navigate('CreateDate');
+    navigation.navigate('CreateCustomDate');
   }, [navigation]);
 
   const handleCreateTimerClock = useCallback(async () => {
@@ -90,8 +88,8 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
 
       if (lastDate) {
         const compare = compareDate({
-          chosenDate: date,
-          lastDate: lastDate.date,
+          date,
+          dateToCompare: lastDate.date,
         });
 
         if (compare === 'equal') {
@@ -290,7 +288,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
             month={card.month}
             hour={card.hour}
             minute={card.minute}
-            disabled={loading}
+            loading={loading}
             callback={handleCardSelect}
           />
         )}
@@ -304,9 +302,6 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
       {showModal && (
         <TouchableWithoutFeedback onPress={handleToggleModal}>
           <ModalContainer>
-            <ModalTitleContainer>
-              <ModalTitle>Registrar horário</ModalTitle>
-            </ModalTitleContainer>
             <Modal>
               <ModalCloseIcon onPress={handleToggleModal}>
                 <FeatherIcon name="x-circle" size={30} color="#d7d7d7" />
@@ -314,7 +309,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
 
               <ModalButton
                 activeOpacity={0.6}
-                onPress={handleNavigationCreateDate}>
+                onPress={handleNavigationCreateCustomDate}>
                 <ModalText>Hora Personalizada</ModalText>
               </ModalButton>
 

@@ -1,26 +1,26 @@
 import { compareAsc } from 'date-fns';
 
 interface ICompareDate {
-  chosenDate: Date;
-  lastDate: Date;
+  date: Date;
+  dateToCompare: Date;
 }
 
-export const compareDate = ({ chosenDate, lastDate }: ICompareDate) => {
-  const compareCurrentDate = compareAsc(chosenDate, new Date());
-  const compare = compareAsc(chosenDate, lastDate);
+export const compareDate = ({ date, dateToCompare }: ICompareDate) => {
+  const compareCurrentDate = compareAsc(date, new Date());
+  const compare = compareAsc(date, dateToCompare);
 
   if (compareCurrentDate === 1) {
     return 'future';
   }
 
   if (compare === -1) {
-    return 'previous';
+    return 'past';
   }
 
   const compareHours =
-    lastDate.toDateString() === chosenDate.toDateString() &&
-    chosenDate.getHours() === lastDate.getHours() &&
-    chosenDate.getMinutes() === lastDate.getMinutes();
+    dateToCompare.toDateString() === date.toDateString() &&
+    date.getHours() === dateToCompare.getHours() &&
+    date.getMinutes() === dateToCompare.getMinutes();
 
   if (compareHours) {
     return 'equal';

@@ -28,9 +28,9 @@ import {
   CheckIcon,
 } from './styles';
 
-type Props = NativeStackScreenProps<AppStackParamList, 'CreateDate'>;
+type Props = NativeStackScreenProps<AppStackParamList, 'CreateCustomDate'>;
 
-export const CreateDate: React.FC<Props> = ({ navigation }) => {
+export const CreateCustomDate: React.FC<Props> = ({ navigation }) => {
   const [lastDate, setLastDate] = useState<Date | null>(null);
   const [selectDate, setSelectDate] = useState(new Date());
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -64,23 +64,14 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
   const handleConfirmation = useCallback(async () => {
     if (lastDate) {
       const compare = compareDate({
-        chosenDate: selectDate,
-        lastDate,
+        date: selectDate,
+        dateToCompare: lastDate,
       });
 
       if (compare === 'future') {
         Toast.show({
           type: 'info',
           text1: 'Não permitido registrar horários futuros',
-        });
-
-        return;
-      }
-
-      if (compare === 'previous') {
-        Toast.show({
-          type: 'info',
-          text1: 'Não permitido registrar horários anteriores',
         });
 
         return;

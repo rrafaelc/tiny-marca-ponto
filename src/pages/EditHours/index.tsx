@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert } from 'react-native';
+import { Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../routes/app.routes';
 import { format } from 'date-fns';
@@ -7,8 +7,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Toast from 'react-native-toast-message';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
-
-import { compareDate } from '../../utils/compareDate';
 
 import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 import { Clock } from '../../components/Clock';
@@ -41,18 +39,17 @@ import {
 type Props = NativeStackScreenProps<AppStackParamList, 'EditHours'>;
 console.log('=====');
 
-let count = 1;
-
 export const EditHours: React.FC<Props> = ({ navigation, route }) => {
-  const [hasSavedChanges, setHasSavedChanges] = useState(true);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [day, setDay] = useState<IDatePropsDTO | null>(null);
   const [type, setType] = useState<'edit' | 'create'>('edit');
   const [formatDateString, setFormatDateString] = useState('--/--/--');
-  const [hours, setHours] = useState<IHour[]>([]);
+  const [hours, setHours] = useState<IHour[]>([
+    { id: '-', date: new Date(), type: 'in' },
+  ]);
   const [hourSelected, setHourSelected] = useState<IHour | null>(null);
   const [selectDate, setSelectDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const { day_id } = route.params;
 
@@ -101,20 +98,14 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
 
   const parseDay = useCallback(
     (d: IDatePropsDTO) => {
-      setLoading(true);
-
       setFormatDateString(formatDate(new Date(d.period[0].date)));
       setHours(parseHour(d));
-
-      setLoading(false);
     },
     [formatDate, parseHour],
   );
 
   const handleEdit = useCallback(
     (date: Date) => {
-      setLoading(true);
-
       if (hourSelected) {
         const hour = hourSelected;
 
@@ -146,13 +137,11 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
 
           parseDay(newDay);
 
-          setHasSavedChanges(false);
+          setHasUnsavedChanges(true);
         }
       }
 
       setHourSelected(null);
-
-      setLoading(false);
     },
     [hourSelected, hours, day, parseDay],
   );
@@ -191,7 +180,7 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
   }, [navigation]);
 
   const handleConfirmation = useCallback(async () => {
-    if (!hasSavedChanges) {
+    if (hasUnsavedChanges) {
       const timerClockRepository = new TimerClockRepository();
 
       if (day) {
@@ -205,13 +194,13 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
         text1: 'Ponto atualizado com sucesso!',
       });
 
-      setHasSavedChanges(true);
+      setHasUnsavedChanges(false);
 
       reloadCalendar();
 
-      // handleGoBack();
+      handleGoBack();
     }
-  }, [hasSavedChanges, day, reloadCalendar]);
+  }, [hasUnsavedChanges, day, reloadCalendar, handleGoBack]);
 
   useEffect(() => {
     const timerClockRepository = new TimerClockRepository();
@@ -235,7 +224,7 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
   useEffect(
     () =>
       navigation.addListener('beforeRemove', e => {
-        if (hasSavedChanges) {
+        if (!hasUnsavedChanges) {
           // If we don't have unsaved changes, then we don't need to do anything
           return;
         }
@@ -259,13 +248,8 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
           ],
         );
       }),
-    [navigation, hasSavedChanges],
+    [navigation, hasUnsavedChanges],
   );
-
-  // console.log('====DAY_ID====');
-  // console.log(count);
-  // count += 1;
-  // console.log(day_id);
 
   return (
     <Container>
@@ -273,44 +257,39 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
         <FeatherICon name="arrow-left" size={40} color="#d7d7d7" />
       </ArrowIcon>
       <Clock />
-      {loading ? (
-        <ContainerDays>
-          <ActivityIndicator size="large" color="#d7d7d7" />
-        </ContainerDays>
-      ) : (
-        <ContainerDays>
-          <DayTextTitle>{formatDateString}</DayTextTitle>
-          <ContainerList>
-            <DateList
-              data={hours}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item: hour }) => (
-                <Hour>
-                  <ButtonEditHour onPress={() => handleEditButton(hour)}>
-                    <FeatherIcon
-                      name={
-                        hour.type === 'in'
-                          ? 'arrow-down-circle'
-                          : 'arrow-up-circle'
-                      }
-                      size={24}
-                      color={hour.type === 'in' ? '#299647' : '#DE4E4E'}
-                    />
-                    <HourText>{formatHour(hour.date)}</HourText>
 
-                    <FeatherIcon name="edit" size={24} color="#d7d7d7" />
-                  </ButtonEditHour>
-                  <ButtonDeleteHour onPress={() => console.log(hour.id)}>
-                    <FeatherIcon name="trash" size={24} color="#DE4E4E" />
-                  </ButtonDeleteHour>
-                </Hour>
-              )}
-              keyExtractor={hour => hour.id}
-            />
-          </ContainerList>
-          <FeatherIcon name="plus-circle" size={24} color="#d7d7d7" />
-        </ContainerDays>
-      )}
+      <ContainerDays>
+        <DayTextTitle>{formatDateString}</DayTextTitle>
+        <ContainerList>
+          <DateList
+            data={hours}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item: hour }) => (
+              <Hour>
+                <ButtonEditHour onPress={() => handleEditButton(hour)}>
+                  <FeatherIcon
+                    name={
+                      hour.type === 'in'
+                        ? 'arrow-down-circle'
+                        : 'arrow-up-circle'
+                    }
+                    size={24}
+                    color={hour.type === 'in' ? '#299647' : '#DE4E4E'}
+                  />
+                  <HourText>{formatHour(hour.date)}</HourText>
+
+                  <FeatherIcon name="edit" size={24} color="#d7d7d7" />
+                </ButtonEditHour>
+                <ButtonDeleteHour onPress={() => console.log(hour.id)}>
+                  <FeatherIcon name="trash" size={24} color="#DE4E4E" />
+                </ButtonDeleteHour>
+              </Hour>
+            )}
+            keyExtractor={hour => hour.id}
+          />
+        </ContainerList>
+        <FeatherIcon name="plus-circle" size={24} color="#d7d7d7" />
+      </ContainerDays>
 
       <CheckIcon onPress={handleConfirmation}>
         <FeatherICon name="check" size={30} color="#d7d7d7" />

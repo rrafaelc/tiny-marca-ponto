@@ -110,29 +110,12 @@ export const ModalContainer = styled.View`
   padding: 0 20px;
   padding-bottom: 80px;
 
-  background: ${rgba('#000', 0.6)};
+  background: ${rgba('#000', 0.7)};
 `;
 
 export const Modal = styled.View`
   width: 100%;
 
-  align-items: center;
-`;
-
-export const ModalTitleContainer = styled.View`
-  position: absolute;
-  top: 10px;
-
-  background-color: #000;
-  border-radius: 15px;
-  padding: 10px;
-`;
-
-export const ModalTitle = styled.Text`
-  font-weight: bold;
-  font-size: 30px;
-  color: #ccc;
-  justify-content: center;
   align-items: center;
 `;
 

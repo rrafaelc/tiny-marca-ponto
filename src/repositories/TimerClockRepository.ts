@@ -24,23 +24,29 @@ export class TimerClockRepository implements ITimerClockRepository {
     if (findIndex !== -1) {
       const register = jsonStorage[findIndex];
 
-      const parseStringPeriodToDate: Array<{ id: string; date: string }> = [];
+      const getPeriods: Array<{ id: string; date: string }> = [];
+
       register.period.forEach(period => {
-        parseStringPeriodToDate.push({
+        getPeriods.push({
           id: period.id,
           date: period.date,
         });
       });
 
-      const newRegister = {
+      // Create a new period
+      getPeriods.push({
+        id: uuid(),
+        date: String(date),
+      });
+
+      // Sort all periods date in order
+      const sortPeriods = getPeriods.sort((a, b) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      });
+
+      const newRegister: IDatePropsDTO = {
         ...register,
-        period: [
-          ...parseStringPeriodToDate,
-          {
-            id: uuid(),
-            date: String(date),
-          },
-        ],
+        period: [...sortPeriods],
       };
 
       const newStorage = jsonStorage;

@@ -149,13 +149,30 @@ export const Calendar: React.FC<CalendarProps> = ({ month, year }) => {
         return;
       }
 
-      if (isToday(localDate)) {
-        // Don't edit today
+      /**
+       * Day already created because it has an ID,
+       * from the calendar then edit hours
+       */
+      if (isToday(localDate) && day.id !== null) {
+        navigation.navigate('EditHours', { day_id: day.id });
+
         return;
       }
 
+      // Is today and don't have an ID
+      if (isToday(localDate)) {
+        navigation.navigate('CreateCustomDate');
+
+        return;
+      }
+
+      /**
+       * It's not today and not in the future,
+       * create an hour on this day to have an ID
+       */
+
       if (day.id === null) {
-        console.log('Criar um dia nesse horario, nova pagina');
+        console.log('Criar um horario nesse dia, nova pagina');
 
         return;
       }

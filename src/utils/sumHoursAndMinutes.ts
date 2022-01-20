@@ -1,3 +1,5 @@
+import { sortDateAsc } from './sortDateAsc';
+
 const pad = (num: number) => String(num).padStart(2, '0');
 
 function timestrToSec(timestr: string) {
@@ -17,12 +19,14 @@ const sumHoursAndMinutes = (date: Date[]) => {
   const hours: string[] = [];
   const workHours: string[] = [];
 
-  for (let i = 0; i < date.length; i++) {
-    if (i + 1 >= date.length) {
+  const sortDate = sortDateAsc(date);
+
+  for (let i = 0; i < sortDate.length; i++) {
+    if (i + 1 >= sortDate.length) {
       break;
     }
 
-    const sub = date[i + 1].getTime() - date[i].getTime();
+    const sub = sortDate[i + 1].getTime() - sortDate[i].getTime();
 
     /* Add 3 hours timezone */
     const correctTimezone = new Date(sub + 3 * 60 * 60 * 1000);
