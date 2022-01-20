@@ -1,6 +1,6 @@
 import styled from 'styled-components/native';
 import { rgba } from 'polished';
-import { FlatList, ScrollView } from 'react-native';
+import { FlatList } from 'react-native';
 
 export const Container = styled.View`
   flex: 1;
@@ -53,7 +53,12 @@ export const HourText = styled.Text`
   margin: 0 15px;
 `;
 
-export const ButtonEditHour = styled.TouchableOpacity``;
+export const ButtonEditHour = styled.TouchableOpacity`
+  flex-direction: row;
+  margin-right: 20px;
+`;
+
+export const ButtonDeleteHour = styled.TouchableOpacity``;
 
 export const CheckIcon = styled.TouchableOpacity`
   position: absolute;

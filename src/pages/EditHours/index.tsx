@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { ActivityIndicator, Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../routes/app.routes';
 import { format } from 'date-fns';
@@ -14,60 +14,15 @@ import { TimerClockRepository } from '../../repositories/TimerClockRepository';
 import { Clock } from '../../components/Clock';
 import { useCalendar } from '../../context/calendarContext';
 
+import { IDatePropsDTO } from '../../dtos/IDatePropsDTO';
+
 import FeatherICon from 'react-native-vector-icons/Feather';
 
-const days = [
-  {
-    id: '1',
-    hour: '06:56',
-    type: 'in',
-  },
-  {
-    id: '2',
-    hour: '06:56',
-    type: 'out',
-  },
-  {
-    id: '3',
-    hour: '06:56',
-    type: 'in',
-  },
-  {
-    id: '4',
-    hour: '06:56',
-    type: 'out',
-  },
-  {
-    id: '5',
-    hour: '06:56',
-    type: 'in',
-  },
-  {
-    id: '6',
-    hour: '06:56',
-    type: 'out',
-  },
-  {
-    id: '7',
-    hour: '06:56',
-    type: 'in',
-  },
-  {
-    id: '8',
-    hour: '06:56',
-    type: 'out',
-  },
-  {
-    id: '9',
-    hour: '06:56',
-    type: 'in',
-  },
-  {
-    id: '10',
-    hour: '06:56',
-    type: 'out',
-  },
-];
+interface IHour {
+  id: string;
+  date: Date;
+  type: 'in' | 'out';
+}
 
 import {
   Container,
@@ -79,25 +34,128 @@ import {
   Hour,
   HourText,
   ButtonEditHour,
+  ButtonDeleteHour,
   CheckIcon,
 } from './styles';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'EditHours'>;
+console.log('=====');
+
+let count = 1;
 
 export const EditHours: React.FC<Props> = ({ navigation, route }) => {
-  const [lastDate, setLastDate] = useState<Date | null>(null);
+  const [hasSavedChanges, setHasSavedChanges] = useState(true);
+  const [day, setDay] = useState<IDatePropsDTO | null>(null);
+  const [type, setType] = useState<'edit' | 'create'>('edit');
+  const [formatDateString, setFormatDateString] = useState('--/--/--');
+  const [hours, setHours] = useState<IHour[]>([]);
+  const [hourSelected, setHourSelected] = useState<IHour | null>(null);
   const [selectDate, setSelectDate] = useState(new Date());
-  const [showConfirmation, setShowConfirmation] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const { day_id } = route.params;
 
   const { reloadCalendar } = useCalendar();
 
-  console.log(route.params.day_id);
+  const formatHour = useCallback((date: Date) => {
+    return format(date, 'HH:mm');
+  }, []);
 
-  const handleGoBack = useCallback(() => {
-    setShowConfirmation(false);
-    navigation.goBack();
-  }, [navigation]);
+  const formatDate = useCallback((date: Date) => {
+    return format(date, 'dd/MM/yyyy');
+  }, []);
+
+  const parseHour = useCallback((date: IDatePropsDTO) => {
+    const hoursArray: IHour[] = [];
+
+    const periods = date.period.sort((a, b) => {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
+
+    const daySort = date;
+    daySort.period = periods;
+
+    setDay(daySort);
+
+    periods.forEach((period, i) => {
+      // Work Hours
+      if (i % 2 === 0) {
+        hoursArray.push({
+          id: period.id,
+          date: new Date(period.date),
+          type: 'in',
+        });
+      } else {
+        // Interval
+        hoursArray.push({
+          id: period.id,
+          date: new Date(period.date),
+          type: 'out',
+        });
+      }
+    });
+
+    return hoursArray;
+  }, []);
+
+  const parseDay = useCallback(
+    (d: IDatePropsDTO) => {
+      setLoading(true);
+
+      setFormatDateString(formatDate(new Date(d.period[0].date)));
+      setHours(parseHour(d));
+
+      setLoading(false);
+    },
+    [formatDate, parseHour],
+  );
+
+  const handleEdit = useCallback(
+    (date: Date) => {
+      setLoading(true);
+
+      if (hourSelected) {
+        const hour = hourSelected;
+
+        hour.date = date;
+
+        const newHour = hours.filter(item => item.id !== hourSelected.id);
+
+        newHour.push(hour);
+
+        const hourSort = newHour.sort((a, b) => {
+          return a.date.getTime() - b.date.getTime();
+        });
+
+        const hourToSave: { id: string; date: string }[] = [];
+
+        hourSort.forEach(item => {
+          hourToSave.push({
+            id: item.id,
+            date: String(item.date),
+          });
+        });
+
+        const newDay = day;
+
+        if (newDay) {
+          newDay.period = hourToSave;
+
+          setDay(newDay);
+
+          parseDay(newDay);
+
+          setHasSavedChanges(false);
+        }
+      }
+
+      setHourSelected(null);
+
+      setLoading(false);
+    },
+    [hourSelected, hours, day, parseDay],
+  );
 
   const handleToggleDatePicker = useCallback(() => {
     setShowDatePicker(state => !state);
@@ -105,92 +163,63 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
 
   const handleDateChanged = useCallback(
     (event: unknown, date: Date | undefined) => {
-      if (Platform.OS === 'android') {
-        setShowDatePicker(false);
-      }
+      setShowDatePicker(false);
 
       if (date) {
         setSelectDate(date);
-        setShowConfirmation(true);
+
+        type === 'edit' && handleEdit(date);
       }
     },
-    [],
+    [type, handleEdit],
   );
 
+  const handleEditButton = useCallback(
+    (hour: IHour) => {
+      setSelectDate(hour.date);
+      setHourSelected(hour);
+
+      setType('edit');
+      handleToggleDatePicker();
+    },
+
+    [handleToggleDatePicker],
+  );
+
+  const handleGoBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
   const handleConfirmation = useCallback(async () => {
-    if (lastDate) {
-      const compare = compareDate({
-        chosenDate: selectDate,
-        lastDate,
+    if (!hasSavedChanges) {
+      const timerClockRepository = new TimerClockRepository();
+
+      if (day) {
+        await timerClockRepository.update(day.id, day);
+      } else {
+        return;
+      }
+
+      Toast.show({
+        type: 'success',
+        text1: 'Ponto atualizado com sucesso!',
       });
 
-      if (compare === 'future') {
-        Toast.show({
-          type: 'info',
-          text1: 'Não permitido registrar horários futuros',
-        });
+      setHasSavedChanges(true);
 
-        return;
-      }
+      reloadCalendar();
 
-      if (compare === 'previous') {
-        Toast.show({
-          type: 'info',
-          text1: 'Não permitido registrar horários anteriores',
-        });
-
-        return;
-      }
-
-      if (compare === 'equal') {
-        Toast.show({
-          type: 'info',
-          text1: 'Não permitido registrar horários iguais',
-        });
-
-        return;
-      }
+      // handleGoBack();
     }
-
-    const timerClockRepository = new TimerClockRepository();
-
-    await timerClockRepository.create(selectDate);
-
-    Toast.show({
-      type: 'success',
-      text1: 'Ponto registrado com sucesso!',
-    });
-
-    reloadCalendar();
-
-    handleGoBack();
-  }, [lastDate, selectDate, reloadCalendar, handleGoBack]);
-
-  const formatDate = useCallback((date: Date | null) => {
-    if (date) {
-      return format(date, 'dd/MM/yyyy');
-    }
-
-    return '--:--';
-  }, []);
-
-  const formatHour = useCallback((date: Date | null) => {
-    if (date) {
-      return format(date, 'HH:mm');
-    }
-
-    return '--/--/--';
-  }, []);
+  }, [hasSavedChanges, day, reloadCalendar]);
 
   useEffect(() => {
     const timerClockRepository = new TimerClockRepository();
 
     timerClockRepository
-      .findLastDate()
+      .findLastDay(day_id)
       .then(response => {
-        if (response !== null) {
-          // setLastDate(response.date);
-        }
+        parseDay(response);
       })
       .catch(err => {
         console.log(err);
@@ -198,11 +227,45 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
         Toast.show({
           type: 'error',
           text1: 'Aconteceu um erro',
-          text2: 'Aconteceu um erro ao carregar o último horário registrado',
           visibilityTime: 6000,
         });
       });
-  }, []);
+  }, [day_id, parseDay]);
+
+  useEffect(
+    () =>
+      navigation.addListener('beforeRemove', e => {
+        if (hasSavedChanges) {
+          // If we don't have unsaved changes, then we don't need to do anything
+          return;
+        }
+
+        // Prevent default behavior of leaving the screen
+        e.preventDefault();
+
+        // Prompt the user before leaving the screen
+        Alert.alert(
+          'Descartar alterações?',
+          'Você tem alterações não salvas. Tem certeza de descartá-los e sair da tela?',
+          [
+            { text: 'Não sair', style: 'cancel', onPress: () => {} },
+            {
+              text: 'Descartar',
+              style: 'destructive',
+              // If the user confirmed, then we dispatch the action we blocked earlier
+              // This will continue the action that had triggered the removal of the screen
+              onPress: () => navigation.dispatch(e.data.action),
+            },
+          ],
+        );
+      }),
+    [navigation, hasSavedChanges],
+  );
+
+  // console.log('====DAY_ID====');
+  // console.log(count);
+  // count += 1;
+  // console.log(day_id);
 
   return (
     <Container>
@@ -210,37 +273,48 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
         <FeatherICon name="arrow-left" size={40} color="#d7d7d7" />
       </ArrowIcon>
       <Clock />
+      {loading ? (
+        <ContainerDays>
+          <ActivityIndicator size="large" color="#d7d7d7" />
+        </ContainerDays>
+      ) : (
+        <ContainerDays>
+          <DayTextTitle>{formatDateString}</DayTextTitle>
+          <ContainerList>
+            <DateList
+              data={hours}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item: hour }) => (
+                <Hour>
+                  <ButtonEditHour onPress={() => handleEditButton(hour)}>
+                    <FeatherIcon
+                      name={
+                        hour.type === 'in'
+                          ? 'arrow-down-circle'
+                          : 'arrow-up-circle'
+                      }
+                      size={24}
+                      color={hour.type === 'in' ? '#299647' : '#DE4E4E'}
+                    />
+                    <HourText>{formatHour(hour.date)}</HourText>
 
-      <ContainerDays>
-        <DayTextTitle>14/02/2022</DayTextTitle>
-        <ContainerList>
-          <DateList
-            data={days}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item: day }) => (
-              <Hour>
-                <FeatherIcon
-                  name={
-                    day.type === 'in' ? 'arrow-down-circle' : 'arrow-up-circle'
-                  }
-                  size={24}
-                  color={day.type === 'in' ? '#299647' : '#DE4E4E'}
-                />
-                <HourText>{day.hour}</HourText>
-                <ButtonEditHour>
-                  <FeatherIcon name="edit" size={24} />
-                </ButtonEditHour>
-              </Hour>
-            )}
-            keyExtractor={day => day.id}
-          />
-        </ContainerList>
-      </ContainerDays>
+                    <FeatherIcon name="edit" size={24} color="#d7d7d7" />
+                  </ButtonEditHour>
+                  <ButtonDeleteHour onPress={() => console.log(hour.id)}>
+                    <FeatherIcon name="trash" size={24} color="#DE4E4E" />
+                  </ButtonDeleteHour>
+                </Hour>
+              )}
+              keyExtractor={hour => hour.id}
+            />
+          </ContainerList>
+          <FeatherIcon name="plus-circle" size={24} color="#d7d7d7" />
+        </ContainerDays>
+      )}
 
-      <CheckIcon onPress={() => {}}>
+      <CheckIcon onPress={handleConfirmation}>
         <FeatherICon name="check" size={30} color="#d7d7d7" />
       </CheckIcon>
-
       {showDatePicker && (
         <DateTimePicker
           value={selectDate}

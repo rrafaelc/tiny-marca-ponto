@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import { TimerClockRepository } from '../../repositories/TimerClockRepository';
-import { getDaysInMonth, format, isFuture } from 'date-fns';
+import { getDaysInMonth, format, isFuture, isToday } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import Toast from 'react-native-toast-message';
 
@@ -149,7 +149,8 @@ export const Calendar: React.FC<CalendarProps> = ({ month, year }) => {
         return;
       }
 
-      if (new Date().getDate() === localDate.getDate()) {
+      if (isToday(localDate)) {
+        // Don't edit today
         return;
       }
 
@@ -158,7 +159,7 @@ export const Calendar: React.FC<CalendarProps> = ({ month, year }) => {
 
         return;
       }
-      navigation.navigate('EditHours', { day_id: 'ID' });
+      navigation.navigate('EditHours', { day_id: day.id });
     },
     [month, year, navigation],
   );

@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../routes/app.routes';
 import { format } from 'date-fns';
@@ -50,9 +49,9 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
 
   const handleDateChanged = useCallback(
     (event: unknown, date: Date | undefined) => {
-      if (Platform.OS === 'android') {
-        setShowDatePicker(false);
-      }
+      // if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+      // }
 
       if (date) {
         setSelectDate(date);
@@ -116,7 +115,7 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
       return format(date, 'dd/MM/yyyy');
     }
 
-    return '--:--';
+    return '--/--/--';
   }, []);
 
   const formatHour = useCallback((date: Date | null) => {
@@ -124,7 +123,7 @@ export const CreateDate: React.FC<Props> = ({ navigation }) => {
       return format(date, 'HH:mm');
     }
 
-    return '--/--/--';
+    return '--:--';
   }, []);
 
   useEffect(() => {
