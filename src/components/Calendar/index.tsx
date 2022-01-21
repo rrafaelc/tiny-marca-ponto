@@ -30,10 +30,7 @@ interface Day {
   available: boolean;
 }
 
-type EditHoursScreenProp = NativeStackNavigationProp<
-  AppStackParamList,
-  'EditHours'
->;
+type NavigationProps = NativeStackNavigationProp<AppStackParamList>;
 
 interface CalendarProps {
   month: number;
@@ -43,7 +40,7 @@ interface CalendarProps {
 export const Calendar: React.FC<CalendarProps> = ({ month, year }) => {
   const [days, setDays] = useState<Day[]>([]);
 
-  const navigation = useNavigation<EditHoursScreenProp>();
+  const navigation = useNavigation<NavigationProps>();
 
   const getDaysDate = useCallback(() => {
     const currentDate = new Date();
