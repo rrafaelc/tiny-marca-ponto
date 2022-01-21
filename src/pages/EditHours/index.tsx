@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../routes/app.routes';
 import { format } from 'date-fns';
+import { v4 as uuid } from 'uuid';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Toast from 'react-native-toast-message';
 
@@ -13,8 +14,6 @@ import { Clock } from '../../components/Clock';
 import { useCalendar } from '../../context/calendarContext';
 
 import { IDatePropsDTO } from '../../dtos/IDatePropsDTO';
-
-import FeatherICon from 'react-native-vector-icons/Feather';
 
 interface IHour {
   id: string;
@@ -28,10 +27,12 @@ import {
   ContainerDays,
   ContainerList,
   DayTextTitle,
+  TotalRegisterText,
   DateList,
   Hour,
   HourText,
   ButtonEditHour,
+  ButtonCreateHour,
   ButtonDeleteHour,
   CheckIcon,
 } from './styles';
@@ -67,7 +68,13 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
     const hoursArray: IHour[] = [];
 
     const periods = date.period.sort((a, b) => {
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
+      const d1 = new Date(a.date);
+      const d2 = new Date(b.date);
+
+      d1.setSeconds(0);
+      d2.setSeconds(0);
+
+      return d1.getTime() - d2.getTime();
     });
 
     const daySort = date;
@@ -109,6 +116,7 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
       if (hourSelected) {
         const hour = hourSelected;
 
+        date.setSeconds(0);
         hour.date = date;
 
         const newHour = hours.filter(item => item.id !== hourSelected.id);
@@ -146,21 +154,68 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
     [hourSelected, hours, day, parseDay],
   );
 
+  const handleCreateAnHour = useCallback(
+    async (date: Date) => {
+      const newDay = day;
+
+      if (newDay) {
+        const getPeriodDate = new Date(newDay.period[0].date);
+
+        date.setFullYear(getPeriodDate.getFullYear());
+        date.setMonth(getPeriodDate.getMonth());
+        date.setDate(getPeriodDate.getDate());
+        date.setSeconds(0);
+
+        const hour = {
+          id: uuid(),
+          date: String(date),
+        };
+
+        newDay.period.push(hour);
+
+        setDay(newDay);
+
+        parseDay(newDay);
+
+        setHasUnsavedChanges(true);
+      }
+    },
+    [day, parseDay],
+  );
+
   const handleToggleDatePicker = useCallback(() => {
     setShowDatePicker(state => !state);
   }, []);
 
   const handleDateChanged = useCallback(
-    (event: unknown, date: Date | undefined) => {
+    async (event: unknown, date: Date | undefined) => {
       setShowDatePicker(false);
 
       if (date) {
+        date.setSeconds(0);
+
+        for (let i = 0; i < hours.length; i++) {
+          hours[i].date.setSeconds(0);
+
+          if (
+            hours[i].date.getHours() === date.getHours() &&
+            hours[i].date.getMinutes() === date.getMinutes()
+          ) {
+            Toast.show({
+              type: 'info',
+              text1: 'Não permitido registrar horários iguais',
+            });
+
+            return;
+          }
+        }
+
         setSelectDate(date);
 
-        type === 'edit' && handleEdit(date);
+        type === 'edit' ? handleEdit(date) : await handleCreateAnHour(date);
       }
     },
-    [type, handleEdit],
+    [hours, type, handleEdit, handleCreateAnHour],
   );
 
   const handleEditButton = useCallback(
@@ -175,9 +230,23 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
     [handleToggleDatePicker],
   );
 
+  const handleCreateButton = useCallback(() => {
+    setSelectDate(new Date());
+    setType('create');
+    handleToggleDatePicker();
+  }, [handleToggleDatePicker]);
+
   const handleGoBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
+
+  const getTotalRegisterHours = useCallback(() => {
+    if (day) {
+      return day.period.length;
+    }
+
+    return 0;
+  }, [day]);
 
   const handleConfirmation = useCallback(async () => {
     if (hasUnsavedChanges) {
@@ -254,12 +323,15 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
   return (
     <Container>
       <ArrowIcon onPress={handleGoBack}>
-        <FeatherICon name="arrow-left" size={40} color="#d7d7d7" />
+        <FeatherIcon name="arrow-left" size={40} color="#d7d7d7" />
       </ArrowIcon>
       <Clock />
 
       <ContainerDays>
         <DayTextTitle>{formatDateString}</DayTextTitle>
+        <TotalRegisterText>
+          Total de {getTotalRegisterHours()} registros
+        </TotalRegisterText>
         <ContainerList>
           <DateList
             data={hours}
@@ -288,11 +360,13 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
             keyExtractor={hour => hour.id}
           />
         </ContainerList>
-        <FeatherIcon name="plus-circle" size={24} color="#d7d7d7" />
+        <ButtonCreateHour onPress={handleCreateButton}>
+          <FeatherIcon name="plus-circle" size={50} color="#aaa" />
+        </ButtonCreateHour>
       </ContainerDays>
 
       <CheckIcon onPress={handleConfirmation}>
-        <FeatherICon name="check" size={30} color="#d7d7d7" />
+        <FeatherIcon name="check" size={30} color="#d7d7d7" />
       </CheckIcon>
       {showDatePicker && (
         <DateTimePicker

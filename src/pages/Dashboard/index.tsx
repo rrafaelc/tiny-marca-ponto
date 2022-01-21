@@ -83,6 +83,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     try {
       const timerClockRepository = new TimerClockRepository();
       const date = new Date();
+      date.setSeconds(0);
 
       const lastDate = await timerClockRepository.findLastDate();
 
@@ -208,7 +209,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
 
     setCalendarLoading(true);
 
-    for (let i = 1; i < 60; i++) {
+    for (let i = 1; i < 7; i++) {
       const oldDays = new Date(date.getTime() - i * 24 * 60 * 60 * 1000);
       const random = () => Math.random() * (60 - 0) + 0;
 

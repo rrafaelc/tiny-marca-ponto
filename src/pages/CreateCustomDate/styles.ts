@@ -68,6 +68,12 @@ export const HourSelected = styled.TouchableOpacity`
 export const HourSelectedText = styled.Text`
   font-size: 18px;
   color: #d7d7d7;
+  font-weight: bold;
+`;
+
+export const DateSelectedText = styled.Text`
+  font-size: 18px;
+  color: #bbb;
 `;
 
 export const CheckIcon = styled.TouchableOpacity`

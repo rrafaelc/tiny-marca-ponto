@@ -33,6 +33,7 @@ export class TimerClockRepository implements ITimerClockRepository {
         });
       });
 
+      date.setSeconds(0);
       // Create a new period
       getPeriods.push({
         id: uuid(),
@@ -49,14 +50,15 @@ export class TimerClockRepository implements ITimerClockRepository {
         period: [...sortPeriods],
       };
 
-      const newStorage = jsonStorage;
+      const updateStorage = jsonStorage;
 
-      newStorage.splice(findIndex, 1, newRegister);
+      // Replace the location of old register with the new register
+      updateStorage.splice(findIndex, 1, newRegister);
 
       try {
         await AsyncStorage.setItem(
           '@rrafaelc/tyny-marca-ponto',
-          JSON.stringify(newStorage),
+          JSON.stringify(updateStorage),
         );
       } catch (err) {
         console.log(err);
@@ -66,6 +68,8 @@ export class TimerClockRepository implements ITimerClockRepository {
 
       return newRegister;
     }
+
+    date.setSeconds(0);
 
     const registerTimer: IDatePropsDTO = {
       id: uuid(),
@@ -106,39 +110,80 @@ export class TimerClockRepository implements ITimerClockRepository {
 
     const dayStorage: IDatePropsDTO[] = JSON.parse(storage);
 
-    // Find if already has a saved day
-    const filterDay = dayStorage.filter(item => item.id !== day_id);
+    // Find if has a saved day
+    const getDayIndex = dayStorage.findIndex(item => item.id === day_id);
 
-    if (filterDay.length === dayStorage.length) {
+    if (getDayIndex !== -1) {
+      const periods: { id: string; date: string }[] = [];
+
+      day.period.forEach(period => periods.push(period));
+
+      const sortPeriods = periods.sort((a, b) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      });
+
+      const updatedDay: IDatePropsDTO = {
+        ...day,
+        period: sortPeriods,
+      };
+
+      const updateStorage = dayStorage;
+
+      updateStorage.splice(getDayIndex, 1, updatedDay);
+
+      try {
+        await AsyncStorage.setItem(
+          '@rrafaelc/tyny-marca-ponto',
+          JSON.stringify(updateStorage),
+        );
+      } catch (err) {
+        console.log(err);
+
+        throw new Error('Error saving data');
+      }
+    } else {
       throw new Error(`Id ${day_id} not found`);
     }
-
-    const periods: { id: string; date: string }[] = [];
-
-    day.period.forEach(period => periods.push(period));
-
-    const sortPeriods = periods.sort((a, b) => {
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
-    });
-
-    const updatedDay: IDatePropsDTO = {
-      ...day,
-      period: sortPeriods,
-    };
-
-    filterDay.push(updatedDay);
-
-    try {
-      await AsyncStorage.setItem(
-        '@rrafaelc/tyny-marca-ponto',
-        JSON.stringify(filterDay),
-      );
-    } catch (err) {
-      console.log(err);
-
-      throw new Error('Error saving data');
-    }
   }
+  // public async update(day_id: string, day: IDatePropsDTO): Promise<void> {
+  //   const storage =
+  //     (await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto')) || '[]';
+
+  //   const dayStorage: IDatePropsDTO[] = JSON.parse(storage);
+
+  //   // Find if already has a saved day
+  //   const filterDay = dayStorage.filter(item => item.id !== day_id);
+
+  //   if (filterDay.length === dayStorage.length) {
+  //     throw new Error(`Id ${day_id} not found`);
+  //   }
+
+  //   const periods: { id: string; date: string }[] = [];
+
+  //   day.period.forEach(period => periods.push(period));
+
+  //   const sortPeriods = periods.sort((a, b) => {
+  //     return new Date(a.date).getTime() - new Date(b.date).getTime();
+  //   });
+
+  //   const updatedDay: IDatePropsDTO = {
+  //     ...day,
+  //     period: sortPeriods,
+  //   };
+
+  //   filterDay.push(updatedDay);
+
+  //   try {
+  //     await AsyncStorage.setItem(
+  //       '@rrafaelc/tyny-marca-ponto',
+  //       JSON.stringify(filterDay),
+  //     );
+  //   } catch (err) {
+  //     console.log(err);
+
+  //     throw new Error('Error saving data');
+  //   }
+  // }
 
   public async findLastDate(): Promise<IFindLastDateDTO | null> {
     const storage = await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto');

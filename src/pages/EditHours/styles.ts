@@ -22,11 +22,17 @@ export const ContainerDays = styled.View`
 export const DayTextTitle = styled.Text`
   font-size: 18px;
   color: #d7d7d7;
-  margin-bottom: 20px;
+`;
+
+export const TotalRegisterText = styled.Text`
+  font-size: 18px;
+  font-weight: bold;
+  color: #d7d7d7;
+  margin-bottom: 5px;
 `;
 
 export const ContainerList = styled.View`
-  height: 200px;
+  height: 250px;
   padding: 20px;
 
   align-items: center;
@@ -51,6 +57,10 @@ export const HourText = styled.Text`
   color: #d7d7d7;
 
   margin: 0 15px;
+`;
+
+export const ButtonCreateHour = styled.TouchableOpacity`
+  margin-top: 10px;
 `;
 
 export const ButtonEditHour = styled.TouchableOpacity`

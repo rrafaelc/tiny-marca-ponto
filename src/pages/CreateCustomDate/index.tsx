@@ -25,6 +25,7 @@ import {
   SelectDateText,
   HourSelected,
   HourSelectedText,
+  DateSelectedText,
   CheckIcon,
 } from './styles';
 
@@ -164,6 +165,7 @@ export const CreateCustomDate: React.FC<Props> = ({ navigation }) => {
           <>
             <HourSelected onPress={handleToggleDatePicker}>
               <HourSelectedText>{formatHour(selectDate)}</HourSelectedText>
+              <DateSelectedText>{formatDate(selectDate)}</DateSelectedText>
             </HourSelected>
             <CheckIcon onPress={handleConfirmation}>
               <FeatherICon name="check" size={30} color="#d7d7d7" />
