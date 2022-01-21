@@ -25,9 +25,9 @@ import {
   SelectDateText,
   HourSelected,
   HourSelectedText,
-  DateSelectedText,
-  ConfirmationButton,
-  ConfirmationButtonText,
+  HourSelectedTextBold,
+  SaveButton,
+  SaveButtonText,
 } from './styles';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'CreateCustomDate'>;
@@ -35,13 +35,13 @@ type Props = NativeStackScreenProps<AppStackParamList, 'CreateCustomDate'>;
 export const CreateCustomDate: React.FC<Props> = ({ navigation }) => {
   const [lastDate, setLastDate] = useState<Date | null>(null);
   const [selectDate, setSelectDate] = useState(new Date());
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showSaveButton, setShowSaveButton] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const { reloadCalendar } = useCalendar();
 
   const handleGoBack = useCallback(() => {
-    setShowConfirmation(false);
+    setShowSaveButton(false);
     navigation.goBack();
   }, [navigation]);
 
@@ -56,14 +56,15 @@ export const CreateCustomDate: React.FC<Props> = ({ navigation }) => {
       // }
 
       if (date) {
+        date.setSeconds(0);
         setSelectDate(date);
-        setShowConfirmation(true);
+        setShowSaveButton(true);
       }
     },
     [],
   );
 
-  const handleConfirmation = useCallback(async () => {
+  const handleSave = useCallback(async () => {
     if (lastDate) {
       const compare = compareDate({
         date: selectDate,
@@ -162,17 +163,25 @@ export const CreateCustomDate: React.FC<Props> = ({ navigation }) => {
           <SelectDateText>Selecionar horário</SelectDateText>
         </SelectDate>
 
-        {showConfirmation && (
+        {showSaveButton && (
           <>
             <HourSelected onPress={handleToggleDatePicker}>
-              <HourSelectedText>{formatHour(selectDate)}</HourSelectedText>
-              <DateSelectedText>{formatDate(selectDate)}</DateSelectedText>
+              <HourSelectedText>
+                Registrar ponto às{' '}
+                <HourSelectedTextBold>
+                  {formatHour(selectDate)}
+                </HourSelectedTextBold>
+              </HourSelectedText>
+              <HourSelectedText>
+                No dia{' '}
+                <HourSelectedTextBold>
+                  {formatDate(selectDate)}
+                </HourSelectedTextBold>
+              </HourSelectedText>
             </HourSelected>
-            <ConfirmationButton
-              activeOpacity={0.6}
-              onPress={handleConfirmation}>
-              <ConfirmationButtonText>Salvar</ConfirmationButtonText>
-            </ConfirmationButton>
+            <SaveButton activeOpacity={0.6} onPress={handleSave}>
+              <SaveButtonText>Salvar</SaveButtonText>
+            </SaveButton>
           </>
         )}
       </ContainerDate>

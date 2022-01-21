@@ -95,13 +95,18 @@ export const MonthCardList = styled.FlatList`
 
 export const Button = styled.TouchableOpacity`
   margin-bottom: 30px;
-  padding: 10px 20px;
-  border-radius: 15px;
+
+  width: 180px;
+  padding: 8px 0;
   border: 1px solid #299647;
+  border-radius: 15px;
+
+  align-items: center;
 `;
 
 export const ButtonText = styled.Text`
   font-size: 18px;
+  font-weight: bold;
   color: #d7d7d7;
 `;
 
@@ -115,7 +120,7 @@ export const ModalContainer = styled.View`
   justify-content: flex-end;
   align-items: center;
   padding: 0 20px;
-  padding-bottom: 80px;
+  padding-bottom: 20px;
 
   background: ${rgba('#000', 0.7)};
 `;

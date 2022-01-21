@@ -59,7 +59,6 @@ export const SelectDateText = styled.Text`
 export const HourSelected = styled.TouchableOpacity`
   padding: 10px;
   border-radius: 10px;
-  background: #299647;
 
   align-items: center;
   justify-content: center;
@@ -68,24 +67,26 @@ export const HourSelected = styled.TouchableOpacity`
 export const HourSelectedText = styled.Text`
   font-size: 18px;
   color: #d7d7d7;
+`;
+
+export const HourSelectedTextBold = styled.Text`
   font-weight: bold;
 `;
 
-export const DateSelectedText = styled.Text`
-  font-size: 18px;
-  color: #bbb;
-`;
-
-export const ConfirmationButton = styled.TouchableOpacity`
+export const SaveButton = styled.TouchableOpacity`
   position: absolute;
-  bottom: 15px;
+  bottom: 20px;
 
-  padding: 10px 20px;
-  border-radius: 15px;
+  width: 180px;
+  padding: 8px 0;
   border: 1px solid #299647;
+  border-radius: 15px;
+
+  align-items: center;
 `;
 
-export const ConfirmationButtonText = styled.Text`
+export const SaveButtonText = styled.Text`
   font-size: 18px;
+  font-weight: bold;
   color: #d7d7d7;
 `;
