@@ -214,7 +214,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
 
     setCalendarLoading(true);
 
-    for (let i = 1; i < 7; i++) {
+    for (let i = 1; i < 21; i++) {
       const oldDays = new Date(date.getTime() - i * 24 * 60 * 60 * 1000);
       const random = () => Math.random() * (60 - 0) + 0;
 

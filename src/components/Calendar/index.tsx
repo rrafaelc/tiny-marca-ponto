@@ -135,6 +135,7 @@ export const Calendar: React.FC<CalendarProps> = ({ month, year }) => {
       const localDate = new Date();
       localDate.setMonth(month);
       localDate.setFullYear(year);
+      localDate.setSeconds(0);
       localDate.setDate(Number(day.text));
 
       if (isFuture(localDate)) {
@@ -166,7 +167,11 @@ export const Calendar: React.FC<CalendarProps> = ({ month, year }) => {
        * for create an ID
        */
       if (day.id === null) {
-        console.log('Criar um horario nesse dia, nova pagina');
+        navigation.navigate('CreateCustomDateForThePast', {
+          day: localDate.getDate(),
+          month: localDate.getMonth(),
+          year: localDate.getFullYear(),
+        });
 
         return;
       }

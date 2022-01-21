@@ -89,7 +89,7 @@ export class TimerClockRepository implements ITimerClockRepository {
         '@rrafaelc/tyny-marca-ponto',
       );
 
-      const oldStorageParsed: [] = JSON.parse(oldStorage || '[]');
+      const oldStorageParsed: IDatePropsDTO[] = JSON.parse(oldStorage || '[]');
 
       await AsyncStorage.setItem(
         '@rrafaelc/tyny-marca-ponto',
