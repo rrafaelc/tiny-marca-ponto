@@ -145,45 +145,6 @@ export class TimerClockRepository implements ITimerClockRepository {
       throw new Error(`Id ${day_id} not found`);
     }
   }
-  // public async update(day_id: string, day: IDatePropsDTO): Promise<void> {
-  //   const storage =
-  //     (await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto')) || '[]';
-
-  //   const dayStorage: IDatePropsDTO[] = JSON.parse(storage);
-
-  //   // Find if already has a saved day
-  //   const filterDay = dayStorage.filter(item => item.id !== day_id);
-
-  //   if (filterDay.length === dayStorage.length) {
-  //     throw new Error(`Id ${day_id} not found`);
-  //   }
-
-  //   const periods: { id: string; date: string }[] = [];
-
-  //   day.period.forEach(period => periods.push(period));
-
-  //   const sortPeriods = periods.sort((a, b) => {
-  //     return new Date(a.date).getTime() - new Date(b.date).getTime();
-  //   });
-
-  //   const updatedDay: IDatePropsDTO = {
-  //     ...day,
-  //     period: sortPeriods,
-  //   };
-
-  //   filterDay.push(updatedDay);
-
-  //   try {
-  //     await AsyncStorage.setItem(
-  //       '@rrafaelc/tyny-marca-ponto',
-  //       JSON.stringify(filterDay),
-  //     );
-  //   } catch (err) {
-  //     console.log(err);
-
-  //     throw new Error('Error saving data');
-  //   }
-  // }
 
   public async findLastDate(): Promise<IFindLastDateDTO | null> {
     const storage = await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto');
