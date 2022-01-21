@@ -61,6 +61,14 @@ export const HourText = styled.Text`
 
 export const ButtonCreateHour = styled.TouchableOpacity`
   margin-top: 10px;
+
+  background: #299647;
+  border-radius: 8px;
+
+  padding: 10px 20px;
+
+  align-items: center;
+  justify-content: center;
 `;
 
 export const ButtonCreateHourText = styled.Text`

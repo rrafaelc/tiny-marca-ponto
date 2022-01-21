@@ -294,71 +294,66 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
 
   const handleDeleteButton = useCallback(
     (hourId: string) => {
-      let deleted = false;
-
-      Alert.alert(
-        'Excluir horário?',
-        'Tem certeza de que deseja excluir o horário?',
-        [
-          { text: 'Voltar', style: 'cancel', onPress: () => {} },
-          {
-            text: 'Excluir',
-            style: 'destructive',
-            onPress: () => {
-              if (hours.length === 1) {
-                Alert.alert(
-                  'Excluir último horário?',
-                  `Tem certeza de que deseja excluir o último horário?\n\nO dia ${formatDateString} será excluído, e terá que criar um novo horário neste dia.`,
-                  [
-                    {
-                      text: 'Voltar',
-                      style: 'cancel',
-                      onPress: () => {},
-                    },
-                    {
-                      text: 'Excluir',
-                      style: 'destructive',
-                      onPress: async () => {
-                        try {
-                          const timerClockRepository =
-                            new TimerClockRepository();
-
-                          await timerClockRepository.delete(day!.id);
-
-                          Toast.show({
-                            type: 'success',
-                            text1: 'Dia excluído!',
-                          });
-
-                          setIsDayDeleted(true);
-
-                          setHasUnsavedChanges(false);
-
-                          handleGoBack();
-
-                          reloadCalendar();
-                        } catch (e) {
-                          console.log(e);
-
-                          Toast.show({
-                            type: 'error',
-                            text1: 'Aconteceu um erro',
-                            visibilityTime: 6000,
-                          });
-                        }
-                      },
-                    },
-                  ],
-                );
-              }
-
-              if (hours.length > 1) {
-                handleDeleteAnHour(hourId);
-              }
+      if (hours.length === 1) {
+        Alert.alert(
+          'Excluir último horário?',
+          `Tem certeza de que deseja excluir o último horário?\n\nO dia ${formatDateString} será excluído.`,
+          [
+            {
+              text: 'Voltar',
+              style: 'cancel',
+              onPress: () => {},
             },
-          },
-        ],
-      );
+            {
+              text: 'Excluir',
+              style: 'destructive',
+              onPress: async () => {
+                try {
+                  const timerClockRepository = new TimerClockRepository();
+
+                  await timerClockRepository.delete(day!.id);
+
+                  Toast.show({
+                    type: 'success',
+                    text1: 'Dia excluído!',
+                  });
+
+                  setIsDayDeleted(true);
+
+                  setHasUnsavedChanges(false);
+
+                  handleGoBack();
+
+                  reloadCalendar();
+                } catch (e) {
+                  console.log(e);
+
+                  Toast.show({
+                    type: 'error',
+                    text1: 'Aconteceu um erro',
+                    visibilityTime: 6000,
+                  });
+                }
+              },
+            },
+          ],
+        );
+      }
+
+      if (hours.length !== 1) {
+        Alert.alert(
+          'Excluir horário?',
+          'Tem certeza de que deseja excluir o horário?',
+          [
+            { text: 'Voltar', style: 'cancel', onPress: () => {} },
+            {
+              text: 'Excluir',
+              style: 'destructive',
+              onPress: () => handleDeleteAnHour(hourId),
+            },
+          ],
+        );
+      }
     },
     [
       day,
@@ -417,8 +412,6 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
     () =>
       navigation.addListener('beforeRemove', e => {
         if (isDayDeleted) {
-          navigation.dispatch(e.data.action);
-
           return;
         }
 
@@ -446,7 +439,7 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
           ],
         );
       }),
-    [navigation, hasUnsavedChanges, isDayDeleted],
+    [isDayDeleted, navigation, hasUnsavedChanges],
   );
 
   return (
@@ -490,7 +483,7 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
           />
         </ContainerList>
         <ButtonCreateHour onPress={handleCreateButton}>
-          <ButtonCreateHourText>Adicionar</ButtonCreateHourText>
+          <ButtonCreateHourText>Adicionar horário</ButtonCreateHourText>
         </ButtonCreateHour>
       </ContainerDays>
 
