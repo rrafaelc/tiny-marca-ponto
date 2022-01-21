@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../routes/app.routes';
-import { format } from 'date-fns';
+import { format, isFuture, isToday } from 'date-fns';
 import { v4 as uuid } from 'uuid';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Toast from 'react-native-toast-message';
@@ -123,6 +123,18 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
         const hour = hourSelected;
 
         date.setSeconds(0);
+
+        if (isToday(date) && isFuture(date)) {
+          Toast.show({
+            type: 'info',
+            text1: 'Não permitido editar horários para o futuro',
+            text2: `No data de hoje ${formatDate(date)}`,
+            visibilityTime: 5000,
+          });
+
+          return;
+        }
+
         hour.date = date;
 
         const newHour = hours.filter(item => item.id !== hourSelected.id);
@@ -157,7 +169,7 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
 
       setHourSelected(null);
     },
-    [hourSelected, hours, day, parseDay],
+    [hourSelected, hours, day, formatDate, parseDay],
   );
 
   const handleCreateAnHour = useCallback(
@@ -171,6 +183,17 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
         date.setMonth(getPeriodDate.getMonth());
         date.setDate(getPeriodDate.getDate());
         date.setSeconds(0);
+
+        if (isToday(date) && isFuture(date)) {
+          Toast.show({
+            type: 'info',
+            text1: 'Não permitido adicionar horários futuros',
+            text2: `No data de hoje ${formatDate(date)}`,
+            visibilityTime: 5000,
+          });
+
+          return;
+        }
 
         const hour = {
           id: uuid(),
@@ -186,7 +209,7 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
         setHasUnsavedChanges(true);
       }
     },
-    [day, parseDay],
+    [day, formatDate, parseDay],
   );
 
   const handleDeleteAnHour = useCallback(
