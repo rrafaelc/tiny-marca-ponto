@@ -69,7 +69,7 @@ export const HourSelectedText = styled.Text`
   color: #d7d7d7;
 `;
 
-export const HourSelectedTextBold = styled.Text`
+export const Bold = styled.Text`
   font-weight: bold;
 `;
 

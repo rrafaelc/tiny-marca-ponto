@@ -25,7 +25,7 @@ import {
   SelectDateText,
   HourSelected,
   HourSelectedText,
-  HourSelectedTextBold,
+  Bold,
   SaveButton,
   SaveButtonText,
 } from './styles';
@@ -167,16 +167,10 @@ export const CreateCustomDate: React.FC<Props> = ({ navigation }) => {
           <>
             <HourSelected onPress={handleToggleDatePicker}>
               <HourSelectedText>
-                Registrar ponto às{' '}
-                <HourSelectedTextBold>
-                  {formatHour(selectDate)}
-                </HourSelectedTextBold>
+                Registrar ponto às <Bold>{formatHour(selectDate)}</Bold>
               </HourSelectedText>
               <HourSelectedText>
-                No dia{' '}
-                <HourSelectedTextBold>
-                  {formatDate(selectDate)}
-                </HourSelectedTextBold>
+                No dia <Bold>{formatDate(selectDate)}</Bold>
               </HourSelectedText>
             </HourSelected>
             <SaveButton activeOpacity={0.6} onPress={handleSave}>
