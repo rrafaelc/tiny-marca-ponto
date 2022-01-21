@@ -215,4 +215,33 @@ export class TimerClockRepository implements ITimerClockRepository {
 
     return day;
   }
+
+  public async delete(day_id: string): Promise<void> {
+    const storage =
+      (await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto')) || '[]';
+
+    const dayStorage: IDatePropsDTO[] = JSON.parse(storage);
+
+    // Find if has a saved day
+    const getDayIndex = dayStorage.findIndex(item => item.id === day_id);
+
+    if (getDayIndex !== -1) {
+      const updateStorage = dayStorage;
+
+      updateStorage.splice(getDayIndex, 1);
+
+      try {
+        await AsyncStorage.setItem(
+          '@rrafaelc/tyny-marca-ponto',
+          JSON.stringify(updateStorage),
+        );
+      } catch (err) {
+        console.log(err);
+
+        throw new Error('Error deleting day');
+      }
+    } else {
+      throw new Error(`Id ${day_id} not found`);
+    }
+  }
 }

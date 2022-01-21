@@ -32,6 +32,7 @@ import {
   CalendarNoteText,
   MonthCardList,
   Button,
+  ButtonText,
   ModalContainer,
   Modal,
   ModalCloseIcon,
@@ -297,7 +298,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
       />
 
       <Button activeOpacity={0.6} onPress={handleToggleModal}>
-        <FeatherIcon name="plus-circle" size={60} color="#d7d7d7" />
+        <ButtonText>Marcar ponto</ButtonText>
       </Button>
 
       {showModal && (

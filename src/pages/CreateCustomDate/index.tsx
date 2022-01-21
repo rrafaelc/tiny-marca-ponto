@@ -26,7 +26,8 @@ import {
   HourSelected,
   HourSelectedText,
   DateSelectedText,
-  CheckIcon,
+  ConfirmationButton,
+  ConfirmationButtonText,
 } from './styles';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'CreateCustomDate'>;
@@ -167,9 +168,11 @@ export const CreateCustomDate: React.FC<Props> = ({ navigation }) => {
               <HourSelectedText>{formatHour(selectDate)}</HourSelectedText>
               <DateSelectedText>{formatDate(selectDate)}</DateSelectedText>
             </HourSelected>
-            <CheckIcon onPress={handleConfirmation}>
-              <FeatherICon name="check" size={30} color="#d7d7d7" />
-            </CheckIcon>
+            <ConfirmationButton
+              activeOpacity={0.6}
+              onPress={handleConfirmation}>
+              <ConfirmationButtonText>Salvar</ConfirmationButtonText>
+            </ConfirmationButton>
           </>
         )}
       </ContainerDate>

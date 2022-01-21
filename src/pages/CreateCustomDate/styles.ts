@@ -76,11 +76,16 @@ export const DateSelectedText = styled.Text`
   color: #bbb;
 `;
 
-export const CheckIcon = styled.TouchableOpacity`
+export const ConfirmationButton = styled.TouchableOpacity`
   position: absolute;
   bottom: 15px;
 
-  padding: 15px;
-  background: #299647;
-  border-radius: 50px;
+  padding: 10px 20px;
+  border-radius: 15px;
+  border: 1px solid #299647;
+`;
+
+export const ConfirmationButtonText = styled.Text`
+  font-size: 18px;
+  color: #d7d7d7;
 `;

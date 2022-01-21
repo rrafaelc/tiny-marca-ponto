@@ -94,8 +94,15 @@ export const MonthCardList = styled.FlatList`
 ` as unknown as typeof FlatList;
 
 export const Button = styled.TouchableOpacity`
-  margin-bottom: 20px;
-  padding: 10px;
+  margin-bottom: 30px;
+  padding: 10px 20px;
+  border-radius: 15px;
+  border: 1px solid #299647;
+`;
+
+export const ButtonText = styled.Text`
+  font-size: 18px;
+  color: #d7d7d7;
 `;
 
 export const ModalContainer = styled.View`

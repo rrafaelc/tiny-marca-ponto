@@ -63,6 +63,12 @@ export const ButtonCreateHour = styled.TouchableOpacity`
   margin-top: 10px;
 `;
 
+export const ButtonCreateHourText = styled.Text`
+  font-size: 18px;
+  font-weight: bold;
+  color: #d7d7d7;
+`;
+
 export const ButtonEditHour = styled.TouchableOpacity`
   flex-direction: row;
   margin-right: 20px;
@@ -70,11 +76,20 @@ export const ButtonEditHour = styled.TouchableOpacity`
 
 export const ButtonDeleteHour = styled.TouchableOpacity``;
 
-export const CheckIcon = styled.TouchableOpacity`
+export const ConfirmationContainer = styled.TouchableOpacity`
   position: absolute;
-  bottom: 15px;
+  bottom: 20px;
 
-  padding: 15px;
-  background: #299647;
-  border-radius: 50px;
+  width: 180px;
+  padding: 8px 0;
+  border: 1px solid #299647;
+  border-radius: 15px;
+
+  align-items: center;
+`;
+
+export const ConfirmationText = styled.Text`
+  font-size: 20px;
+  font-weight: bold;
+  color: #d7d7d7;
 `;

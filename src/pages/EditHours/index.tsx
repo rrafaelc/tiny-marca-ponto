@@ -33,12 +33,13 @@ import {
   HourText,
   ButtonEditHour,
   ButtonCreateHour,
+  ButtonCreateHourText,
   ButtonDeleteHour,
-  CheckIcon,
+  ConfirmationContainer,
+  ConfirmationText,
 } from './styles';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'EditHours'>;
-console.log('=====');
 
 export const EditHours: React.FC<Props> = ({ navigation, route }) => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -51,10 +52,15 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
   const [hourSelected, setHourSelected] = useState<IHour | null>(null);
   const [selectDate, setSelectDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isDayDeleted, setIsDayDeleted] = useState(false);
 
   const { day_id } = route.params;
 
   const { reloadCalendar } = useCalendar();
+
+  const handleGoBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
 
   const formatHour = useCallback((date: Date) => {
     return format(date, 'HH:mm');
@@ -64,7 +70,7 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
     return format(date, 'dd/MM/yyyy');
   }, []);
 
-  const parseHour = useCallback((date: IDatePropsDTO) => {
+  const parseDateToHour = useCallback((date: IDatePropsDTO) => {
     const hoursArray: IHour[] = [];
 
     const periods = date.period.sort((a, b) => {
@@ -106,9 +112,9 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
   const parseDay = useCallback(
     (d: IDatePropsDTO) => {
       setFormatDateString(formatDate(new Date(d.period[0].date)));
-      setHours(parseHour(d));
+      setHours(parseDateToHour(d));
     },
-    [formatDate, parseHour],
+    [formatDate, parseDateToHour],
   );
 
   const handleEdit = useCallback(
@@ -183,6 +189,48 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
     [day, parseDay],
   );
 
+  const handleDeleteAnHour = useCallback(
+    async (hourId: string) => {
+      let filterHours = hours.filter(hour => hour.id !== hourId);
+
+      if (filterHours.length === 0) {
+        setHasUnsavedChanges(false);
+
+        handleGoBack();
+
+        reloadCalendar();
+
+        return;
+      }
+
+      const hourSort = filterHours.sort((a, b) => {
+        return a.date.getTime() - b.date.getTime();
+      });
+
+      const newDay = day;
+
+      const hourToSave: { id: string; date: string }[] = [];
+
+      hourSort.forEach(item => {
+        hourToSave.push({
+          id: item.id,
+          date: String(item.date),
+        });
+      });
+
+      if (newDay) {
+        newDay.period = hourToSave;
+
+        setDay(newDay);
+
+        parseDay(newDay);
+
+        setHasUnsavedChanges(true);
+      }
+    },
+    [hours, day, parseDay, handleGoBack, reloadCalendar],
+  );
+
   const handleToggleDatePicker = useCallback(() => {
     setShowDatePicker(state => !state);
   }, []);
@@ -236,10 +284,6 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
     handleToggleDatePicker();
   }, [handleToggleDatePicker]);
 
-  const handleGoBack = useCallback(() => {
-    navigation.goBack();
-  }, [navigation]);
-
   const getTotalRegisterHours = useCallback(() => {
     if (day) {
       return day.period.length;
@@ -247,6 +291,85 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
 
     return 0;
   }, [day]);
+
+  const handleDeleteButton = useCallback(
+    (hourId: string) => {
+      let deleted = false;
+
+      Alert.alert(
+        'Excluir horário?',
+        'Tem certeza de que deseja excluir o horário?',
+        [
+          { text: 'Voltar', style: 'cancel', onPress: () => {} },
+          {
+            text: 'Excluir',
+            style: 'destructive',
+            onPress: () => {
+              if (hours.length === 1) {
+                Alert.alert(
+                  'Excluir último horário?',
+                  `Tem certeza de que deseja excluir o último horário?\n\nO dia ${formatDateString} será excluído, e terá que criar um novo horário neste dia.`,
+                  [
+                    {
+                      text: 'Voltar',
+                      style: 'cancel',
+                      onPress: () => {},
+                    },
+                    {
+                      text: 'Excluir',
+                      style: 'destructive',
+                      onPress: async () => {
+                        try {
+                          const timerClockRepository =
+                            new TimerClockRepository();
+
+                          await timerClockRepository.delete(day!.id);
+
+                          Toast.show({
+                            type: 'success',
+                            text1: 'Dia excluído!',
+                          });
+
+                          setIsDayDeleted(true);
+
+                          setHasUnsavedChanges(false);
+
+                          handleGoBack();
+
+                          reloadCalendar();
+                        } catch (e) {
+                          console.log(e);
+
+                          Toast.show({
+                            type: 'error',
+                            text1: 'Aconteceu um erro',
+                            visibilityTime: 6000,
+                          });
+                        }
+                      },
+                    },
+                  ],
+                );
+              }
+
+              if (hours.length > 1) {
+                handleDeleteAnHour(hourId);
+              }
+            },
+          },
+        ],
+      );
+    },
+    [
+      day,
+      hours,
+      formatDateString,
+      handleDeleteAnHour,
+      setHasUnsavedChanges,
+      handleGoBack,
+      reloadCalendar,
+    ],
+  );
 
   const handleConfirmation = useCallback(async () => {
     if (hasUnsavedChanges) {
@@ -260,7 +383,7 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
 
       Toast.show({
         type: 'success',
-        text1: 'Ponto atualizado com sucesso!',
+        text1: 'Registros alterados com sucesso!',
       });
 
       setHasUnsavedChanges(false);
@@ -293,6 +416,12 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
   useEffect(
     () =>
       navigation.addListener('beforeRemove', e => {
+        if (isDayDeleted) {
+          navigation.dispatch(e.data.action);
+
+          return;
+        }
+
         if (!hasUnsavedChanges) {
           // If we don't have unsaved changes, then we don't need to do anything
           return;
@@ -317,7 +446,7 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
           ],
         );
       }),
-    [navigation, hasUnsavedChanges],
+    [navigation, hasUnsavedChanges, isDayDeleted],
   );
 
   return (
@@ -352,7 +481,7 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
 
                   <FeatherIcon name="edit" size={24} color="#d7d7d7" />
                 </ButtonEditHour>
-                <ButtonDeleteHour onPress={() => console.log(hour.id)}>
+                <ButtonDeleteHour onPress={() => handleDeleteButton(hour.id)}>
                   <FeatherIcon name="trash" size={24} color="#DE4E4E" />
                 </ButtonDeleteHour>
               </Hour>
@@ -361,13 +490,13 @@ export const EditHours: React.FC<Props> = ({ navigation, route }) => {
           />
         </ContainerList>
         <ButtonCreateHour onPress={handleCreateButton}>
-          <FeatherIcon name="plus-circle" size={50} color="#aaa" />
+          <ButtonCreateHourText>Adicionar</ButtonCreateHourText>
         </ButtonCreateHour>
       </ContainerDays>
 
-      <CheckIcon onPress={handleConfirmation}>
-        <FeatherIcon name="check" size={30} color="#d7d7d7" />
-      </CheckIcon>
+      <ConfirmationContainer onPress={handleConfirmation}>
+        <ConfirmationText>Salvar</ConfirmationText>
+      </ConfirmationContainer>
       {showDatePicker && (
         <DateTimePicker
           value={selectDate}
