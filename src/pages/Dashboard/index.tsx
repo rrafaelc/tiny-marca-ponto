@@ -57,6 +57,10 @@ interface IHandleCardSelect {
   month: number;
 }
 
+if (__DEV__) {
+  console.log('Running in dev mode');
+}
+
 export const Dashboard: React.FC<Props> = ({ navigation }) => {
   const [monthCards, setMonthCards] = useState<IMonthCardProps[]>([]);
   const [cardSelectedId, setCardSelectedId] = useState(-1);
@@ -254,12 +258,16 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
 
   return (
     <Container>
-      <DevButtonCreate onPress={handleDevCreate}>
-        <FeatherIcon name="tool" size={20} color="#fff" />
-      </DevButtonCreate>
-      <DevButtonClear onPress={handleDevClear}>
-        <FeatherIcon name="trash-2" size={20} color="#fff" />
-      </DevButtonClear>
+      {__DEV__ && (
+        <>
+          <DevButtonCreate onPress={handleDevCreate}>
+            <FeatherIcon name="tool" size={20} color="#fff" />
+          </DevButtonCreate>
+          <DevButtonClear onPress={handleDevClear}>
+            <FeatherIcon name="trash-2" size={20} color="#fff" />
+          </DevButtonClear>
+        </>
+      )}
       <Clock />
       <Hour>
         <HourText>{totalHours}</HourText>
