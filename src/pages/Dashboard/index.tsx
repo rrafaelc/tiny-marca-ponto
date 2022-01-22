@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-import { format } from 'date-fns';
+import { format, isFuture } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
 import { compareDate } from '../../utils/compareDate';
@@ -26,7 +26,7 @@ import {
   HourText,
   Month,
   MonthText,
-  LoadingCard,
+  ReloadMonthButton,
   Total,
   TotalText,
   CalendarNoteText,
@@ -46,17 +46,15 @@ import { useEffect } from 'react';
 type Props = NativeStackScreenProps<AppStackParamList, 'Dashboard'>;
 
 interface IMonthCardProps {
-  id: string;
+  id: number;
   month: number;
-  year: number;
   hour: string;
   minute: string;
 }
 
 interface IHandleCardSelect {
-  id: string;
+  id: number;
   month: number;
-  year: number;
 }
 
 if (__DEV__) {
@@ -65,12 +63,9 @@ if (__DEV__) {
 
 export const Dashboard: React.FC<Props> = ({ navigation }) => {
   const [monthCards, setMonthCards] = useState<IMonthCardProps[]>([]);
+  const [cardSelectedId, setCardSelectedId] = useState(-1);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [cardSelectedId, setCardSelectedId] = useState(
-    `${selectedYear}${selectedMonth}`,
-  );
-  const [loadingCard, setLoadingCard] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [monthText, setMonthText] = useState(
     format(new Date(), 'MMMM', { locale: ptBR }),
@@ -147,62 +142,71 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
     setTotalHours(`${hour[0]} horas e ${hour[1]} minutos`);
   }, [selectedMonth, selectedYear, getTotalHours]);
 
-  const getMonthCardData = useCallback(async () => {
-    setLoadingCard(true);
-    const localMonthCards: IMonthCardProps[] = [];
+  const getMonthCardData = useCallback(
+    async (amount: number) => {
+      const localMonthCards: IMonthCardProps[] = [];
 
-    const timerClockRepository = new TimerClockRepository();
+      let localMonth = new Date().getMonth();
+      let localYear = new Date().getFullYear();
 
-    const dates = await timerClockRepository.getAllMonthDays();
-
-    let previousMonth: number;
-    let previousYear: number;
-
-    // https://gist.github.com/joeytwiddle/37d2085425c049629b80956d3c618971
-    await dates.reduce(async (a, date) => {
-      await a;
-
-      const month = date.month;
-      const year = date.year;
-
-      if (previousMonth === month && previousYear === year) {
-        return;
+      // For not render a card with current month
+      if (localMonth === 0) {
+        localYear -= 1;
+        localMonth = 11;
+      } else {
+        localMonth -= 1;
       }
 
-      const totalHrs = await getTotalHours(month, year);
+      for (let i = 0; i <= amount; i++) {
+        const data = await getTotalHours(localMonth, localYear);
+        const split = data.split(':');
 
-      const split = totalHrs.split(':');
+        const hour = split[0];
+        const minute = split[1];
 
-      const hour = split[0];
-      const minute = split[1];
+        localMonthCards.push({
+          id: localMonth,
+          month: localMonth,
+          hour,
+          minute,
+        });
 
-      previousMonth = month;
-      previousYear = year;
+        if (localMonth === 0) {
+          localYear -= 1;
+          localMonth = 12;
+        }
 
-      localMonthCards.push({
-        id: String(`${year}${month}`),
-        month,
-        year,
-        hour,
-        minute,
-      });
-    }, Promise.resolve());
+        localMonth -= 1;
+      }
 
-    setMonthCards(localMonthCards);
-
-    setLoadingCard(false);
-  }, [getTotalHours]);
-
-  const handleCardSelect = useCallback(
-    ({ id, month, year }: IHandleCardSelect) => {
-      setCardSelectedId(id);
-      setSelectedMonth(month);
-      setSelectedYear(year);
-
-      setMonthText(format(new Date(year, month), 'MMMM', { locale: ptBR }));
+      setMonthCards(localMonthCards);
     },
-    [],
+    [getTotalHours],
   );
+
+  const handleCardSelect = useCallback(({ id, month }: IHandleCardSelect) => {
+    setCardSelectedId(id);
+    setSelectedMonth(month);
+
+    setMonthText(format(new Date().setMonth(month), 'MMMM', { locale: ptBR }));
+
+    const future = isFuture(new Date().setMonth(month));
+
+    if (future) {
+      setSelectedYear(new Date().getFullYear() - 1);
+    } else {
+      setSelectedYear(new Date().getFullYear());
+    }
+  }, []);
+
+  const handleResetMonth = useCallback(() => {
+    const currentDate = new Date();
+
+    setCardSelectedId(-1);
+    setSelectedMonth(currentDate.getMonth());
+    setSelectedYear(currentDate.getFullYear());
+    setMonthText(format(currentDate, 'MMMM', { locale: ptBR }));
+  }, []);
 
   const handleDevCreate = useCallback(async () => {
     const timerClockRepository = new TimerClockRepository();
@@ -210,7 +214,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
 
     setCalendarLoading(true);
 
-    for (let i = 1; i < 400; i++) {
+    for (let i = 1; i < 21; i++) {
       const oldDays = new Date(date.getTime() - i * 24 * 60 * 60 * 1000);
       const random = () => Math.random() * (60 - 0) + 0;
 
@@ -232,7 +236,6 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
       type: 'success',
       text1: 'Ponto registrado com sucesso!',
     });
-
     setCalendarLoading(false);
 
     reloadCalendar();
@@ -250,7 +253,7 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     handleGetTotalHoursComponent();
-    getMonthCardData();
+    getMonthCardData(10);
   }, [handleGetTotalHoursComponent, getMonthCardData, loading]);
 
   return (
@@ -272,6 +275,9 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
 
       <Month>
         <MonthText>{monthText}</MonthText>
+        <ReloadMonthButton disabled={loading} onPress={handleResetMonth}>
+          <FeatherIcon name="rotate-cw" size={18} color="#d7d7d7" />
+        </ReloadMonthButton>
         <Total>
           <TotalText>Hoje</TotalText>
           <TotalText>{totalToday}</TotalText>
@@ -281,29 +287,23 @@ export const Dashboard: React.FC<Props> = ({ navigation }) => {
       <Calendar month={selectedMonth} year={selectedYear} />
       <CalendarNoteText>Nota: Clique em um dia para editar</CalendarNoteText>
 
-      {loadingCard ? (
-        <LoadingCard>
-          <ActivityIndicator size="large" color="#d7d7d7" />
-        </LoadingCard>
-      ) : (
-        <MonthCardList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={monthCards}
-          renderItem={({ item: card }) => (
-            <MonthCard
-              id={card.id}
-              selected={cardSelectedId}
-              month={card.month}
-              year={card.year}
-              hour={card.hour}
-              minute={card.minute}
-              callback={handleCardSelect}
-            />
-          )}
-          keyExtractor={card => String(card.id)}
-        />
-      )}
+      <MonthCardList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        data={monthCards}
+        renderItem={({ item: card }) => (
+          <MonthCard
+            id={card.month}
+            selected={cardSelectedId}
+            month={card.month}
+            hour={card.hour}
+            minute={card.minute}
+            loading={loading}
+            callback={handleCardSelect}
+          />
+        )}
+        keyExtractor={card => String(card.id)}
+      />
 
       <Button activeOpacity={0.6} onPress={handleToggleModal}>
         <ButtonText>Marcar ponto</ButtonText>

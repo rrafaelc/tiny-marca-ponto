@@ -170,15 +170,6 @@ export class TimerClockRepository implements ITimerClockRepository {
     return null;
   }
 
-  public async getAllMonthDays(): Promise<IDatePropsDTO[]> {
-    const storage =
-      (await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto')) || '[]';
-
-    const parseStorage: IDatePropsDTO[] = JSON.parse(storage);
-
-    return parseStorage;
-  }
-
   public async getMonthDays(
     month: number,
     year: number,

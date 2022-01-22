@@ -1,22 +1,22 @@
 import React, { useCallback, useMemo } from 'react';
+import { ActivityIndicator } from 'react-native';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
 import { Container, Text } from './styles';
 
 interface CardSelected {
-  id: string;
+  id: number;
   month: number;
-  year: number;
 }
 
 type MonthCardProps = {
-  id: string;
-  selected: string;
+  id: number;
+  selected: number;
   month: number;
-  year: number;
   hour: string;
   minute: string;
+  loading: boolean;
   callback: (data: CardSelected) => void;
 };
 
@@ -24,31 +24,35 @@ export const MonthCard: React.FC<MonthCardProps> = ({
   id,
   selected,
   month,
-  year,
   hour,
   minute,
+  loading,
   callback,
 }) => {
   const monthParsed = useMemo(() => {
     const date = new Date().setMonth(month);
 
-    return format(date, 'MMM', { locale: ptBR });
+    return format(date, 'MMMM', { locale: ptBR });
   }, [month]);
 
   const handleCallback = useCallback(() => {
-    callback({ id, month, year });
-  }, [callback, id, month, year]);
+    callback({ id, month });
+  }, [callback, id, month]);
 
   return (
     <Container
       activeOpacity={1}
       selected={selected === id}
+      disabled={loading}
       onPress={handleCallback}>
-      <Text>
-        {monthParsed} {year}
-      </Text>
-
-      <Text>{`${hour}:${minute}`}</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#d7d7d7" />
+      ) : (
+        <>
+          <Text>{monthParsed}</Text>
+          <Text>{`${hour}:${minute}`}</Text>
+        </>
+      )}
     </Container>
   );
 };
