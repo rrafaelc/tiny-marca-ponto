@@ -94,10 +94,10 @@ export const MonthCardList = styled.FlatList`
 ` as unknown as typeof FlatList;
 
 export const Button = styled.TouchableOpacity`
-  margin-bottom: 30px;
+  margin-bottom: 35px;
 
   width: 180px;
-  padding: 8px 0;
+  padding: 12px 0;
   border: 1px solid #299647;
   border-radius: 15px;
 

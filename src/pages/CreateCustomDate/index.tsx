@@ -126,8 +126,10 @@ export const CreateCustomDate: React.FC<Props> = ({ navigation }) => {
     timerClockRepository
       .findLastDate()
       .then(response => {
-        if (response !== null) {
+        if (response) {
           setLastDate(response.date);
+        } else {
+          setLastDate(null);
         }
       })
       .catch(err => {

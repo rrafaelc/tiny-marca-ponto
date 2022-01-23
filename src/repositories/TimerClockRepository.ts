@@ -147,11 +147,12 @@ export class TimerClockRepository implements ITimerClockRepository {
   }
 
   public async findLastDate(): Promise<IFindLastDateDTO | null> {
-    const storage = await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto');
+    const storage =
+      (await AsyncStorage.getItem('@rrafaelc/tyny-marca-ponto')) || '[]';
 
-    if (storage) {
-      const parseStorage: IDatePropsDTO[] = JSON.parse(storage);
+    const parseStorage: IDatePropsDTO[] = JSON.parse(storage);
 
+    if (parseStorage.length > 0) {
       const allDates: number[] = [];
 
       parseStorage.forEach(st =>
